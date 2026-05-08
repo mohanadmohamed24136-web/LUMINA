@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Studio | LUMINA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="dark bg-dark-bg text-white overflow-x-hidden">
+    <div class="bg-mesh"></div>
+    <nav class="fixed top-0 left-0 right-0 z-50 glass border-b border-white/5 backdrop-blur-xl">
+        <div class="container mx-auto px-6 h-20 flex items-center justify-between">
+            <a href="index.html" class="text-2xl font-black bg-gradient-to-r from-primary-cyan via-primary-magenta to-primary-gold bg-clip-text text-transparent tracking-tighter uppercase">LUMINA AI</a>
+            <a href="index.html" class="text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-white transition-colors">Return to Grid</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-6 pt-32 pb-20 text-center space-y-12">
+        <header class="max-w-3xl mx-auto space-y-6">
+            <h1 class="text-6xl md:text-8xl font-black tracking-tighter uppercase">Neural <span class="bg-gradient-to-r from-primary-cyan to-primary-magenta bg-clip-text text-transparent">Studio</span></h1>
+            <p class="text-gray-500 text-sm font-black uppercase tracking-[0.4em]">Initialize the neural engine to synthesize unique fashion architecture</p>
+        </header>
+
+        <div class="max-w-4xl mx-auto glass p-10 rounded-[4rem] border border-white/5 space-y-8">
+            <div class="space-y-4">
+                <textarea id="ai-prompt" class="w-full bg-white/5 border border-white/10 rounded-3xl p-8 text-lg font-bold text-white outline-none focus:border-primary-cyan/30 transition-all min-h-[200px] resize-none" placeholder="Describe your masterpiece (e.g. A futuristic gown made of liquid silver and digital silk...)"></textarea>
+            </div>
+            <button onclick="generateAI()" class="w-full bg-primary-cyan text-black py-6 rounded-3xl font-black text-sm uppercase tracking-[0.3em] hover:scale-105 transition-all shadow-[0_0_50px_rgba(0,240,255,0.3)] flex items-center justify-center gap-4">
+                <i data-lucide="sparkles" class="w-6 h-6"></i>
+                Initialize Synthesis
+            </button>
+        </div>
+
+        <div id="ai-result" class="hidden max-w-2xl mx-auto space-y-8 animate-fade-in">
+            <div class="aspect-square rounded-[3rem] overflow-hidden glass border border-primary-cyan/30 p-2">
+                <img id="generated-img" class="w-full h-full object-cover rounded-[2.5rem]">
+            </div>
+            <div class="flex gap-4">
+                <button onclick="location.reload()" class="flex-1 glass py-5 rounded-2xl font-black text-xs uppercase tracking-widest border-white/10 hover:bg-white/5 transition-all">Discard</button>
+                <button onclick="publishAI()" class="flex-1 bg-white text-black py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-primary-cyan transition-all">Publish to Grid</button>
+            </div>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+    <script>
+        lucide.createIcons();
+        
+        async function generateAI() {
+            const prompt = document.getElementById('ai-prompt').value;
+            if (!prompt) return showToast('Prompt required for synthesis', 'error');
+
+            showToast('Neural engine initializing...');
+            // Mock AI Generation (Real integration would call DALL-E/Midjourney API)
+            setTimeout(() => {
+                document.getElementById('ai-result').classList.remove('hidden');
+                document.getElementById('generated-img').src = `https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&q=80&w=800`;
+                showToast('Synthesis complete!');
+            }, 2000);
+        }
+
+        async function publishAI() {
+            if (!currentUser) return showToast('Login required to publish', 'error');
+            
+            const p = {
+                name: "AI Generated Masterpiece",
+                price: 1999,
+                architect: "LUMINA NEURAL ENGINE",
+                designerEmail: currentUser.email,
+                description: document.getElementById('ai-prompt').value,
+                img: document.getElementById('generated-img').src,
+                isAI: 1
+            };
+
+            const res = await fetch(`${API_BASE}/products`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(p)
+            });
+
+            if (res.ok) {
+                showToast('Asset published to the grid!');
+                setTimeout(() => window.location.href = 'index.html', 2000);
+            }
+        }
+    </script>
+</body>
+</html>

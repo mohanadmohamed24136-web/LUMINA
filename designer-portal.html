@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Designer Portal | LUMINA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="dark bg-dark-bg text-white">
+    <div class="bg-mesh"></div>
+    <nav class="fixed top-0 left-0 right-0 z-50 glass border-b border-white/5 backdrop-blur-xl">
+        <div class="container mx-auto px-6 h-20 flex items-center justify-between">
+            <a href="index.html" class="text-2xl font-black bg-gradient-to-r from-primary-cyan via-primary-magenta to-primary-gold bg-clip-text text-transparent tracking-tighter uppercase">LUMINA DESIGNER</a>
+            <button onclick="logout()" class="text-xs font-black uppercase tracking-widest text-red-400 hover:text-red-300 transition-colors">Logout</button>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-6 pt-32 pb-20">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <aside class="space-y-4">
+                <button onclick="showTab('dashboard')" class="w-full text-left px-6 py-4 glass rounded-2xl border border-white/5 hover:border-primary-cyan transition-all text-xs font-black uppercase tracking-widest">Dashboard</button>
+                <button onclick="showTab('upload')" class="w-full text-left px-6 py-4 glass rounded-2xl border border-white/5 hover:border-primary-cyan transition-all text-xs font-black uppercase tracking-widest">Upload Design</button>
+                <button onclick="showTab('products')" class="w-full text-left px-6 py-4 glass rounded-2xl border border-white/5 hover:border-primary-cyan transition-all text-xs font-black uppercase tracking-widest">My Designs</button>
+            </aside>
+            
+            <div class="lg:col-span-3 space-y-12">
+                <div id="tab-dashboard" class="space-y-8">
+                    <h1 class="text-5xl font-black tracking-tighter uppercase">Neural <span class="text-primary-cyan">Insights</span></h1>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="glass p-8 rounded-3xl border border-white/5">
+                            <p class="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2">Total Sales</p>
+                            <p class="text-3xl font-black">$0.00</p>
+                        </div>
+                        <div class="glass p-8 rounded-3xl border border-white/5">
+                            <p class="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2">Assets Sold</p>
+                            <p class="text-3xl font-black">0</p>
+                        </div>
+                        <div class="glass p-8 rounded-3xl border border-white/5">
+                            <p class="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2">Active Designs</p>
+                            <p id="stat-active" class="text-3xl font-black">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-upload" class="hidden space-y-8">
+                    <h1 class="text-5xl font-black tracking-tighter uppercase">Initialize <span class="text-primary-gold">Asset</span></h1>
+                    <form id="upload-form" class="glass p-10 rounded-[3rem] border border-white/5 space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <input type="text" id="p-name" placeholder="Design Name" class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-sm font-bold outline-none focus:border-primary-cyan/30">
+                            <input type="number" id="p-price" placeholder="Price ($)" class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-sm font-bold outline-none focus:border-primary-cyan/30">
+                        </div>
+                        <textarea id="p-desc" placeholder="Design Architecture Description" class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-sm font-bold outline-none focus:border-primary-cyan/30 min-h-[150px]"></textarea>
+                        <input type="file" id="p-img" accept="image/*" class="w-full text-xs font-black uppercase tracking-widest text-gray-500">
+                        <button type="submit" class="w-full bg-primary-cyan text-black py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 transition-all">Publish to Grid</button>
+                    </form>
+                </div>
+
+                <div id="tab-products" class="hidden space-y-8">
+                    <h1 class="text-5xl font-black tracking-tighter uppercase">My <span class="text-primary-magenta">Collection</span></h1>
+                    <div id="my-products" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Products injected here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+    <script>
+        function showTab(tab) {
+            ['dashboard', 'upload', 'products'].forEach(t => document.getElementById(`tab-${t}`).classList.add('hidden'));
+            document.getElementById(`tab-${tab}`).classList.remove('hidden');
+            if (tab === 'products') loadMyProducts();
+        }
+
+        async function loadMyProducts() {
+            const res = await fetch(`${API_BASE}/products`);
+            const products = await res.json();
+            const my = products.filter(p => p.designerEmail === currentUser.email);
+            const list = document.getElementById('my-products');
+            
+            list.innerHTML = my.map(p => `
+                <div class="glass p-4 rounded-3xl border border-white/5 space-y-4">
+                    <img src="${API_BASE.replace('/api', '')}${p.img}" class="w-full h-48 object-cover rounded-2xl">
+                    <div class="flex justify-between items-center">
+                        <h4 class="font-black uppercase tracking-tighter">${p.name}</h4>
+                        <span class="text-primary-cyan font-black">$${p.price}</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <span class="text-[8px] font-black uppercase tracking-widest px-2 py-1 bg-white/5 rounded-md">${p.status || 'PENDING'}</span>
+                        <button onclick="deleteProduct('${p.id}')" class="text-[8px] font-black uppercase tracking-widest px-2 py-1 bg-red-500/10 text-red-400 rounded-md">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+            document.getElementById('stat-active').textContent = my.length;
+        }
+
+        document.getElementById('upload-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData();
+            formData.append('name', document.getElementById('p-name').value);
+            formData.append('price', document.getElementById('p-price').value);
+            formData.append('description', document.getElementById('p-desc').value);
+            formData.append('images', document.getElementById('p-img').files[0]);
+            formData.append('designerEmail', currentUser.email);
+            formData.append('architect', currentUser.username);
+
+            const res = await fetch(`${API_BASE}/products`, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (res.ok) {
+                showToast('Asset initialized and sent for approval');
+                showTab('products');
+            }
+        });
+
+        if (getCookie('userRole') !== 'designer') {
+            alert('Access Denied');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

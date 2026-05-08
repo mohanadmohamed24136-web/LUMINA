@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details | LUMINA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: { colors: { primary: { cyan: "#00F0FF", magenta: "#FF00AA", gold: "#FFD700" }, dark: { bg: "#050505", card: "rgba(20, 20, 20, 0.7)", border: "rgba(255, 255, 255, 0.1)" } } } }
+        }
+    </script>
+</head>
+<body class="dark bg-dark-bg text-white">
+    <div class="bg-mesh"></div>
+    <nav class="fixed top-0 left-0 right-0 z-50 glass border-b border-white/5 backdrop-blur-xl">
+        <div class="container mx-auto px-6 h-20 flex items-center justify-between">
+            <a href="index.html" class="text-2xl font-black bg-gradient-to-r from-primary-cyan via-primary-magenta to-primary-gold bg-clip-text text-transparent tracking-tighter uppercase">LUMINA</a>
+            <a href="index.html" class="text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-white transition-colors">Return to Grid</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-6 pt-32 pb-20">
+        <div id="product-detail-container" class="grid grid-cols-1 lg:grid-cols-2 gap-16 animate-fade-in">
+            <!-- Loading state -->
+            <div class="col-span-full py-40 text-center">
+                <div class="w-16 h-16 border-4 border-primary-cyan border-t-transparent rounded-full animate-spin mx-auto"></div>
+            </div>
+        </div>
+    </main>
+
+    <script src="assets/js/script.js"></script>
+    <script>
+        async function loadProduct() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+            if (!id) return window.location.href = 'index.html';
+
+            const res = await fetch(`${API_BASE}/products/${id}`);
+            const p = await res.json();
+            const container = document.getElementById('product-detail-container');
+
+            container.innerHTML = `
+                <div class="space-y-8">
+                    <div class="aspect-square rounded-[4rem] overflow-hidden glass border border-white/5 p-2">
+                        <img src="${API_BASE.replace('/api', '')}${p.img}" class="w-full h-full object-cover rounded-[3.5rem]">
+                    </div>
+                </div>
+                <div class="space-y-10">
+                    <div class="space-y-4">
+                        <p class="text-[10px] font-black uppercase tracking-[0.5em] text-primary-cyan">${p.isAI ? 'Neural Synthesis' : 'Master Craftsmanship'}</p>
+                        <h1 class="text-6xl font-black tracking-tighter uppercase leading-none">${p.name}</h1>
+                        <p class="text-3xl font-black text-white/50">$${p.price}</p>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <h4 class="text-[10px] font-black uppercase tracking-widest text-gray-500">Architecture Description</h4>
+                        <p class="text-gray-400 leading-relaxed font-medium">${p.description || 'No detailed architecture manifest provided.'}</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="glass p-6 rounded-3xl border border-white/5">
+                            <p class="text-[8px] font-black uppercase tracking-widest text-gray-500 mb-1">Architect</p>
+                            <p class="text-xs font-black uppercase">${p.architect}</p>
+                        </div>
+                        <div class="glass p-6 rounded-3xl border border-white/5">
+                            <p class="text-[8px] font-black uppercase tracking-widest text-gray-500 mb-1">Status</p>
+                            <p class="text-xs font-black uppercase text-primary-cyan">${p.isSold ? 'Sold Out' : 'Available'}</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4">
+                        <button onclick="addToCart('${p.id}', '${p.name}', '${p.price}', '${p.img}', '${p.architect}')" class="flex-1 bg-white text-black py-6 rounded-3xl font-black text-xs uppercase tracking-widest hover:bg-primary-cyan transition-all">Acquire Asset</button>
+                        <button onclick="toggleFavorite('${p.id}')" class="w-20 glass rounded-3xl flex items-center justify-center text-white hover:text-primary-magenta transition-all"><i data-lucide="heart" class="w-6 h-6"></i></button>
+                    </div>
+                </div>
+            `;
+            if (window.lucide) lucide.createIcons();
+        }
+
+        document.addEventListener('DOMContentLoaded', loadProduct);
+    </script>
+</body>
+</html>

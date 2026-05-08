@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart | LUMINA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: { colors: { primary: { cyan: "#00F0FF", magenta: "#FF00AA", gold: "#FFD700" }, dark: { bg: "#050505", card: "rgba(20, 20, 20, 0.7)", border: "rgba(255, 255, 255, 0.1)" } } } }
+        }
+    </script>
+</head>
+<body class="dark bg-dark-bg text-white">
+    <div class="bg-mesh"></div>
+    <nav class="fixed top-0 left-0 right-0 z-50 glass border-b border-white/5 backdrop-blur-xl">
+        <div class="container mx-auto px-6 h-20 flex items-center justify-between">
+            <a href="index.html" class="text-2xl font-black bg-gradient-to-r from-primary-cyan via-primary-magenta to-primary-gold bg-clip-text text-transparent tracking-tighter uppercase">LUMINA CART</a>
+            <a href="index.html" class="text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-white transition-colors">Return to Grid</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-6 pt-32 pb-20">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            <div class="lg:col-span-2 space-y-8">
+                <h1 class="text-5xl font-black tracking-tighter uppercase">Your <span class="text-primary-cyan">Acquisitions</span></h1>
+                <div id="cart-items-container" class="space-y-6">
+                    <!-- Cart items injected here -->
+                </div>
+            </div>
+            <div class="space-y-8">
+                <div class="glass p-10 rounded-[3rem] border border-white/5 space-y-8">
+                    <h2 class="text-2xl font-black tracking-tighter uppercase">Summary</h2>
+                    <div class="space-y-4">
+                        <div class="flex justify-between text-xs font-black uppercase tracking-widest text-gray-500">
+                            <span>Subtotal</span>
+                            <span id="cart-subtotal">$0</span>
+                        </div>
+                        <div class="flex justify-between text-xs font-black uppercase tracking-widest text-gray-500">
+                            <span>Logistics</span>
+                            <span>FREE</span>
+                        </div>
+                        <div class="h-px bg-white/5"></div>
+                        <div class="flex justify-between text-xl font-black uppercase tracking-tighter">
+                            <span>Total</span>
+                            <span id="cart-total" class="text-primary-cyan">$0</span>
+                        </div>
+                    </div>
+                    <button onclick="checkout()" class="w-full bg-white text-black py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-primary-cyan transition-all shadow-xl">Complete Acquisition</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+    <script>
+        async function updateCartUI() {
+            const container = document.getElementById('cart-items-container');
+            const subtotalEl = document.getElementById('cart-subtotal');
+            const totalEl = document.getElementById('cart-total');
+            
+            if (!currentUser) return;
+            
+            const res = await fetch(`${API_BASE}/cart/${currentUser.email}`);
+            const items = await res.json();
+            
+            if (items.length === 0) {
+                container.innerHTML = '<div class="py-20 text-center glass rounded-3xl border border-white/5"><p class="text-gray-500 text-xs font-black uppercase tracking-widest">Your cart is empty</p></div>';
+                subtotalEl.textContent = '$0';
+                totalEl.textContent = '$0';
+                return;
+            }
+
+            let total = 0;
+            container.innerHTML = items.map(item => {
+                total += item.price * item.quantity;
+                return `
+                <div class="glass p-6 rounded-3xl border border-white/5 flex items-center gap-6">
+                    <img src="${API_BASE.replace('/api', '')}${item.img}" class="w-24 h-24 rounded-2xl object-cover">
+                    <div class="flex-1">
+                        <h4 class="font-black uppercase tracking-tighter">${item.name}</h4>
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest">${item.architect}</p>
+                    </div>
+                    <div class="text-right space-y-2">
+                        <p class="font-black text-primary-cyan">$${item.price}</p>
+                        <button onclick="removeFromCart('${item.id}')" class="text-red-400 hover:text-red-300 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </div>
+                </div>
+                `;
+            }).join('');
+            
+            subtotalEl.textContent = `$${total}`;
+            totalEl.textContent = `$${total}`;
+            if (window.lucide) lucide.createIcons();
+        }
+
+        async function removeFromCart(id) {
+            await fetch(`${API_BASE}/cart/${id}`, { method: 'DELETE' });
+            updateCartUI();
+        }
+
+        async function checkout() {
+            showToast('Processing acquisition protocol...');
+            // In a real app, this would redirect to a payment gateway
+            setTimeout(() => {
+                showToast('Acquisition successful!');
+                window.location.href = 'index.html';
+            }, 2000);
+        }
+
+        document.addEventListener('DOMContentLoaded', updateCartUI);
+    </script>
+</body>
+</html>

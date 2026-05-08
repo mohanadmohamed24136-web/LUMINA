@@ -1,7 +1,7 @@
 {
-  "name": "lumina-backend",
+  "name": "lumina-project",
   "version": "1.0.0",
-  "description": "LUMINA Luxury Fashion Marketplace Backend",
+  "description": "LUMINA Luxury Fashion Marketplace",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | LUMINA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: { colors: { primary: { cyan: "#00F0FF", magenta: "#FF00AA", gold: "#FFD700" }, dark: { bg: "#050505", card: "rgba(20, 20, 20, 0.7)", border: "rgba(255, 255, 255, 0.1)" } } } }
+        }
+    </script>
+</head>
+<body class="dark overflow-x-hidden min-h-screen flex items-center justify-center p-6 relative w-full">
+    <!-- Theme Toggle Floating -->
+    <button onclick="toggleTheme()" class="fixed top-8 right-8 w-12 h-12 glass rounded-2xl flex items-center justify-center text-primary-gold z-50 hover:scale-110 transition-all">
+        <i data-lucide="sun" class="theme-icon w-6 h-6"></i>
+    </button>
+
+    <!-- Mesh Background -->
+    <div class="bg-mesh"></div>
+
+    <!-- Background Accents -->
+    <div class="absolute inset-0 -z-10 overflow-hidden pointer-events-none opacity-30">
+        <div class="absolute -top-1/4 -left-1/4 w-[800px] h-[800px] bg-primary-cyan rounded-full blur-[200px] animate-float"></div>
+        <div class="absolute -bottom-1/4 -right-1/4 w-[800px] h-[800px] bg-primary-magenta rounded-full blur-[200px] animate-float" style="animation-delay: -2s"></div>
+    </div>
+
+    <div class="max-w-md w-full glass p-1.5 md:p-2 rounded-3xl md:rounded-[3.5rem] border border-white/10 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.6)] relative overflow-hidden animate-fade-in group mx-auto">
+        <div class="bg-black/40 rounded-[1.5rem] md:rounded-[3rem] p-6 md:p-10 space-y-8 md:space-y-10 relative overflow-hidden text-center">
+            <!-- Glow Accent -->
+            <div class="absolute -top-20 -right-20 w-40 h-40 bg-primary-cyan/20 blur-[50px] rounded-full group-hover:bg-primary-cyan/30 transition-all duration-700"></div>
+            
+            <!-- Logo -->
+            <div class="flex justify-center mb-4 md:mb-8">
+                <a href="index.html" class="flex items-center gap-2 md:gap-3">
+                    <div class="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-primary-cyan to-primary-magenta rounded-lg md:rounded-xl flex items-center justify-center">
+                        <i data-lucide="sparkles" class="w-5 h-5 md:w-6 md:h-6 text-white"></i>
+                    </div>
+                    <span class="text-2xl md:text-3xl font-black bg-gradient-to-r from-primary-cyan via-primary-magenta to-primary-gold bg-clip-text text-transparent tracking-tighter uppercase">LUMINA</span>
+                </a>
+            </div>
+
+            <!-- Tabs (Figma Style) -->
+            <div class="flex p-1 bg-white/5 rounded-xl md:rounded-2xl mb-4 md:mb-8">
+                <button class="flex-1 py-2.5 md:py-3 rounded-lg md:rounded-xl bg-primary-cyan text-black font-black text-[10px] md:text-xs uppercase tracking-widest shadow-lg shadow-primary-cyan/20">Login</button>
+                <a href="signup.html" class="flex-1 py-2.5 md:py-3 rounded-lg md:rounded-xl text-gray-500 hover:text-white font-black text-[10px] md:text-xs uppercase tracking-widest transition-all">Create Account</a>
+            </div>
+
+            <form class="space-y-4 md:space-y-6 text-left">
+                <div class="space-y-4 md:space-y-6">
+                    <div class="space-y-1.5 md:space-y-2 group/input">
+                        <label class="text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-gray-500 ml-3 md:ml-4">Email</label>
+                        <input type="email" id="email" placeholder="Enter your email" required 
+                            class="w-full bg-white/5 border border-white/5 rounded-xl md:rounded-2xl py-3.5 md:py-4 px-5 md:px-6 focus:bg-white/10 focus:border-primary-cyan/30 transition-all outline-none text-xs md:text-sm font-bold placeholder:text-white/20">
+                        <p id="email-hint" class="text-[7px] md:text-[8px] font-bold text-red-500/0 ml-3 md:ml-4 uppercase tracking-widest transition-all">Invalid email architecture</p>
+                    </div>
+                    
+                    <div class="space-y-1.5 md:space-y-2 group/input">
+                        <label class="text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-gray-500 ml-3 md:ml-4">Password</label>
+                        <input type="password" id="password" placeholder="Enter your password" required 
+                            class="w-full bg-white/5 border border-white/5 rounded-xl md:rounded-2xl py-3.5 md:py-4 px-5 md:px-6 focus:bg-white/10 focus:border-primary-cyan/30 transition-all outline-none text-xs md:text-sm font-bold placeholder:text-white/20">
+                        <p id="pass-hint" class="text-[7px] md:text-[8px] font-bold text-red-500/0 ml-3 md:ml-4 uppercase tracking-widest transition-all">Identity key too short</p>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-primary-cyan text-black font-black py-4 md:py-5 rounded-xl md:rounded-2xl flex items-center justify-center space-x-3 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-2xl mt-4 md:mt-8">
+                    <span class="uppercase tracking-[0.2em] text-[10px] md:text-xs">Sign In</span>
+                </button>
+            </form>
+
+            <div class="text-center pt-8 space-y-4">
+                <p class="text-[10px] font-black uppercase tracking-widest text-gray-500 leading-relaxed">
+                    Don't have an account? <a href="signup.html" class="text-primary-cyan hover:underline ml-2">Sign up</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        lucide.createIcons();
+
+        // Redirect if already logged in
+        if (getCookie('userId')) {
+            window.location.href = 'index.html';
+        }
+
+        // Live Validation
+        const emailInput = document.getElementById('email');
+        const passInput = document.getElementById('password');
+
+        emailInput.addEventListener('input', () => {
+            const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value);
+            const hint = document.getElementById('email-hint');
+            if (emailInput.value && !isValid) {
+                hint.classList.remove('text-red-500/0');
+                hint.classList.add('text-red-500');
+            } else {
+                hint.classList.add('text-red-500/0');
+                hint.classList.remove('text-red-500');
+            }
+        });
+
+        passInput.addEventListener('input', () => {
+            const hint = document.getElementById('pass-hint');
+            if (passInput.value && passInput.value.length < 6) {
+                hint.classList.remove('text-red-500/0');
+                hint.classList.add('text-red-500');
+            } else {
+                hint.classList.add('text-red-500/0');
+                hint.classList.remove('text-red-500');
+            }
+        });
+
+        document.querySelector('form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim().toLowerCase();
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    setCookie('userId', data.id, 7);
+                    setCookie('userEmail', data.email, 7);
+                    setCookie('userRole', data.role, 7);
+                    showToast('LUMINA Identity Verified! Welcome back.');
+                    setTimeout(() => window.location.href = 'index.html', 1500);
+                } else {
+                    showToast(data.error || 'Login Failed', 'error');
+                }
+            } catch (err) {
+                console.error('API Error:', err);
+                showToast('Backend Connection Error!', 'error');
+            }
+        });
+    </script>
+</body>
+</html>
