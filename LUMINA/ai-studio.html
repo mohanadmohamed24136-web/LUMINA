@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Studio | LUMINA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script>
+        // Check authentication via cookies
+        function getCookie(name) {
+            let nameEQ = name + "=";
+            let ca = document.cookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+
+        if (!getCookie('userId')) {
+            alert('You must be registered first to access AI Studio');
+            window.location.href = 'login.html';
+        }
+    </script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: { colors: { primary: { cyan: "#00F0FF", magenta: "#FF00AA", gold: "#FFD700" }, dark: { bg: "#050505", card: "rgba(20, 20, 20, 0.7)", border: "rgba(255, 255, 255, 0.1)" } } } }
+        }
+    </script>
+</head>
+<body class="dark overflow-x-hidden">
+    <!-- Mesh Background -->
+    <div class="bg-mesh"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 glass border-b border-white/5 backdrop-blur-xl">
+        <div class="container mx-auto px-4 md:px-6 h-16 md:h-24 flex items-center justify-between gap-4 md:gap-8">
+            <a href="index.html" class="flex items-center gap-2 md:gap-3 shrink-0">
+                <div class="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-primary-cyan to-primary-magenta rounded-lg md:rounded-xl flex items-center justify-center">
+                    <i data-lucide="sparkles" class="w-4 h-4 md:w-6 md:h-6 text-white"></i>
+                </div>
+                <span class="text-lg md:text-2xl font-black bg-gradient-to-r from-primary-cyan via-primary-magenta to-primary-gold bg-clip-text text-transparent tracking-tighter uppercase block">LUMINA</span>
+            </a>
+
+            <div class="flex-1 max-w-xl relative group hidden lg:block">
+                <i data-lucide="search" class="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-primary-cyan transition-colors"></i>
+                <input type="text" placeholder="Search neural designs..." 
+                    class="w-full bg-white/5 border border-white/10 rounded-2xl py-3 pl-14 pr-6 text-sm font-bold text-white outline-none focus:border-primary-cyan/30 focus:bg-white/10 transition-all">
+            </div>
+
+            <div class="flex items-center gap-1.5 md:gap-4 shrink-0">
+                <!-- Theme Toggle -->
+                <button onclick="toggleTheme()" class="w-9 h-9 md:w-12 md:h-12 flex items-center justify-center rounded-lg md:rounded-2xl bg-white/5 border border-white/10 text-gray-400 hover:text-primary-gold hover:border-primary-gold/30 transition-all group">
+                    <i data-lucide="sun" class="theme-icon w-3.5 h-3.5 md:w-5 md:h-5 group-hover:rotate-90 transition-transform"></i>
+                </button>
+
+                <a href="index.html" class="w-9 h-9 md:w-12 md:h-12 flex items-center justify-center rounded-lg md:rounded-2xl bg-white/5 border border-white/10 text-gray-400 hover:text-primary-cyan hover:border-primary-cyan/30 transition-all group">
+                    <i data-lucide="home" class="w-3.5 h-3.5 md:w-5 md:h-5 group-hover:scale-110 transition-transform"></i>
+                </a>
+
+                <a href="cart.html" class="relative w-9 h-9 md:w-12 md:h-12 flex items-center justify-center rounded-lg md:rounded-2xl bg-white/5 border border-white/10 text-gray-400 hover:text-primary-cyan hover:border-primary-cyan/30 transition-all group">
+                    <i data-lucide="shopping-bag" class="w-3.5 h-3.5 md:w-5 md:h-5 group-hover:scale-110 transition-transform"></i>
+                    <span id="cart-badge" class="absolute -top-1 -right-1 bg-primary-cyan text-black text-[8px] font-black w-3.5 h-3.5 flex items-center justify-center rounded-full border-2 border-dark-bg">0</span>
+                </a>
+
+                <div id="nav-user-area">
+                    <a href="login.html" class="bg-primary-cyan text-black px-3 md:px-8 py-2 md:py-4 rounded-lg md:rounded-2xl font-black text-[8px] md:text-[10px] uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary-cyan/20">
+                        Join
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 md:px-6 pt-20 md:pt-40 pb-20 relative">
+        <div class="flex flex-col lg:flex-row gap-8 lg:gap-12">
+            <!-- Left Side: Creative Input -->
+            <div class="flex-1 space-y-6 md:space-y-8 animate-fade-in">
+                <div class="flex flex-col sm:flex-row items-center gap-4 md:gap-6 mb-6 md:mb-8 text-center sm:text-left">
+                    <div class="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-primary-cyan to-primary-magenta rounded-xl md:rounded-2xl flex items-center justify-center shadow-lg shadow-primary-cyan/20 shrink-0">
+                        <i data-lucide="wand-2" class="w-6 h-6 md:w-8 md:h-8 text-white"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl md:text-5xl font-black tracking-tighter uppercase leading-none">AI Studio</h1>
+                        <p class="text-gray-500 font-bold mt-1 md:mt-2 uppercase tracking-widest text-[8px] md:text-[10px]">Transform Ideas Into Wearable Art</p>
+                    </div>
+                </div>
+
+                <div class="glass p-1.5 rounded-3xl md:rounded-[3rem] border border-white/10 group transition-all duration-700 hover:border-primary-cyan/30">
+                    <div class="bg-black/40 rounded-2xl md:rounded-[2.5rem] p-6 md:p-8 space-y-6 md:space-y-8 relative overflow-hidden">
+                        <div class="space-y-3 md:space-y-4">
+                            <label class="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-gray-400 flex items-center gap-2">
+                                <i data-lucide="eye" class="w-3 h-3"></i>
+                                Describe Your Vision
+                            </label>
+                            <textarea id="prompt-input" 
+                                placeholder="Example: A futuristic evening dress with holographic fabric, asymmetric cut, neon blue accents, and flowing silhouette..." 
+                                class="w-full bg-transparent border-none text-base md:text-lg font-bold placeholder:text-white/10 focus:ring-0 transition-all min-h-[120px] md:min-h-[250px] resize-none text-white outline-none"></textarea>
+                        </div>
+
+                        <div class="space-y-3 md:space-y-4">
+                            <p class="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-gray-500">Quick suggestions:</p>
+                            <div class="flex flex-wrap gap-2">
+                                <button onclick="setPrompt('Cyberpunk streetwear jacket')" class="px-3 md:px-4 py-2 rounded-full text-[8px] md:text-[9px] font-black uppercase tracking-widest border border-white/5 hover:border-primary-cyan hover:bg-primary-cyan/10 transition-all glass">Cyberpunk streetwear</button>
+                                <button onclick="setPrompt('Elegant evening gown with neon accents')" class="px-3 md:px-4 py-2 rounded-full text-[8px] md:text-[9px] font-black uppercase tracking-widest border border-white/5 hover:border-primary-magenta hover:bg-primary-magenta/10 transition-all glass">Elegant gown</button>
+                                <button onclick="setPrompt('Minimalist futuristic dress')" class="px-3 md:px-4 py-2 rounded-full text-[8px] md:text-[9px] font-black uppercase tracking-widest border border-white/5 hover:border-primary-gold hover:bg-primary-gold/10 transition-all glass">Minimalist dress</button>
+                            </div>
+                        </div>
+
+                        <button onclick="simulateGenerate()" id="generate-btn" 
+                            class="w-full bg-primary-cyan text-black py-4 md:py-6 rounded-xl md:rounded-2xl font-black text-[10px] md:text-xs uppercase tracking-[0.2em] flex items-center justify-center space-x-3 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_20px_40px_rgba(0,240,255,0.2)]">
+                            <i data-lucide="sparkles" class="w-4 h-4 md:w-5 md:h-5"></i>
+                            <span>Generate Design</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Results Area -->
+                <div id="results-area" class="space-y-6 md:space-y-8 pt-6 md:pt-8">
+                    <!-- Loading State -->
+                    <div id="loading-state" class="hidden flex flex-col items-center justify-center py-12 md:py-20 space-y-4 md:space-y-6 glass rounded-3xl md:rounded-[3rem] border border-white/10">
+                        <div class="relative">
+                            <div class="w-12 h-12 md:w-16 md:h-16 border-2 border-primary-cyan/20 rounded-full"></div>
+                            <div class="absolute inset-0 w-12 h-12 md:w-16 md:h-16 border-t-2 border-primary-cyan rounded-full animate-spin"></div>
+                        </div>
+                        <p class="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-primary-cyan animate-pulse">Neural Fabric Synthesis In Progress...</p>
+                    </div>
+
+                    <!-- Results Grid -->
+                    <div id="results-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 hidden">
+                        <!-- Images will be injected here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Controls & Sidebar -->
+            <aside class="w-full lg:w-[380px] space-y-6 animate-fade-in" style="animation-delay: 0.2s">
+                <!-- Smart Sizing -->
+                <div class="glass p-6 md:p-8 rounded-3xl md:rounded-[2.5rem] border border-white/10 space-y-6 relative overflow-hidden group">
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="ruler" class="w-4 h-4 md:w-5 md:h-5 text-primary-gold"></i>
+                        <h3 class="text-xs md:text-sm font-black uppercase tracking-widest">Smart Sizing</h3>
+                    </div>
+
+                    <div class="grid grid-cols-2 lg:grid-cols-1 gap-4">
+                        <div class="space-y-1.5 md:space-y-2">
+                            <label class="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-gray-500">Height (cm)</label>
+                            <input type="number" value="170" class="w-full bg-white/5 border border-white/5 rounded-xl py-3 px-4 text-xs md:text-sm font-bold focus:bg-white/10 outline-none transition-all">
+                        </div>
+                        <div class="space-y-1.5 md:space-y-2">
+                            <label class="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-gray-500">Weight (kg)</label>
+                            <input type="number" value="65" class="w-full bg-white/5 border border-white/5 rounded-xl py-3 px-4 text-xs md:text-sm font-bold focus:bg-white/10 outline-none transition-all">
+                        </div>
+                    </div>
+                    <div class="space-y-1.5 md:space-y-2">
+                        <label class="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-gray-500">Body Type</label>
+                        <select class="w-full bg-white/5 border border-white/5 rounded-xl py-3 px-4 text-xs md:text-sm font-bold focus:bg-white/10 outline-none transition-all appearance-none cursor-pointer">
+                            <option>Select</option>
+                            <option>Slim</option>
+                            <option>Athletic</option>
+                            <option>Regular</option>
+                            <option>Plus Size</option>
+                        </select>
+                    </div>
+
+                    <div class="pt-4 border-t border-white/5 space-y-2">
+                        <div class="flex justify-between items-center">
+                            <p class="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-gray-400">AI Recommendation</p>
+                            <p class="text-xs md:text-sm font-black text-primary-cyan uppercase tracking-widest">Size M</p>
+                        </div>
+                        <p class="text-[8px] md:text-[9px] text-gray-500 font-medium leading-relaxed">Based on your measurements, we recommend a Medium for the best fit.</p>
+                    </div>
+                </div>
+
+                <!-- Style Controls -->
+                <div class="glass p-6 md:p-8 rounded-3xl md:rounded-[2.5rem] border border-white/10 space-y-6 md:space-y-8">
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="sliders" class="w-4 h-4 md:w-5 md:h-5 text-primary-magenta"></i>
+                        <h3 class="text-xs md:text-sm font-black uppercase tracking-widest">Style Controls</h3>
+                    </div>
+
+                    <div class="space-y-4 md:space-y-6">
+                        <div class="space-y-2 md:space-y-3">
+                            <div class="flex justify-between text-[8px] md:text-[9px] font-black uppercase tracking-widest">
+                                <span>Futuristic</span>
+                                <span class="text-primary-cyan">80%</span>
+                            </div>
+                            <div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                                <div class="h-full bg-primary-cyan w-[80%] rounded-full shadow-[0_0_10px_rgba(0,240,255,0.5)]"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-2 md:space-y-3">
+                            <div class="flex justify-between text-[8px] md:text-[9px] font-black uppercase tracking-widest">
+                                <span>Elegant</span>
+                                <span class="text-primary-magenta">65%</span>
+                            </div>
+                            <div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                                <div class="h-full bg-primary-magenta w-[65%] rounded-full shadow-[0_0_10px_rgba(255,0,170,0.5)]"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="w-full bg-primary-magenta text-white py-3.5 md:py-4 rounded-xl font-black text-[9px] md:text-[10px] uppercase tracking-[0.2em] hover:scale-105 transition-all shadow-lg shadow-primary-magenta/20">
+                        Apply Adjustments
+                    </button>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <!-- Premium Footer -->
+    <footer class="relative mt-24 overflow-hidden">
+        <!-- Background Accents -->
+        <div class="absolute inset-0 -z-10 bg-black/40 backdrop-blur-3xl border-t border-white/5"></div>
+        <div class="absolute -top-24 -left-24 w-96 h-96 bg-primary-cyan/5 rounded-full blur-[100px]"></div>
+        <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-primary-magenta/5 rounded-full blur-[100px]"></div>
+
+        <div class="container mx-auto px-6 py-20">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-20">
+                <!-- Brand Info -->
+                <div class="space-y-8 text-left">
+                    <a href="index.html" class="text-3xl font-black bg-gradient-to-r from-primary-cyan via-primary-magenta to-primary-gold bg-clip-text text-transparent tracking-tighter uppercase">LUMINA</a>
+                    <p class="text-gray-500 text-sm font-medium leading-relaxed">
+                        Redefining the architecture of fashion through neural networks and master craftsmanship. Join the elite community of designers and collectors.
+                    </p>
+                </div>
+
+                <!-- Explore -->
+                <div class="space-y-8 text-left">
+                    <h4 class="text-[10px] font-black uppercase tracking-[0.3em] text-white">Explore Ecosystem</h4>
+                    <ul class="space-y-4">
+                        <li><a href="ai-studio.html" class="text-sm font-bold text-gray-500 hover:text-primary-cyan transition-colors">AI Creative Studio</a></li>
+                        <li><a href="index.html#designer-products-grid" class="text-sm font-bold text-gray-500 hover:text-primary-cyan transition-colors">Elite Designers</a></li>
+                        <li><a href="designer-portal.html" class="text-sm font-bold text-gray-500 hover:text-primary-magenta transition-colors">Designer Portal</a></li>
+                        <li><a href="#" class="text-sm font-bold text-gray-500 hover:text-primary-cyan transition-colors">Trending Now</a></li>
+                    </ul>
+                </div>
+
+                <!-- Direct Collaboration -->
+                <div class="space-y-8 text-left">
+                    <h4 class="text-[10px] font-black uppercase tracking-[0.3em] text-white">Direct Collaboration</h4>
+                    <ul class="space-y-4">
+                        <li class="group">
+                            <a href="mailto:mohanad.mohamed.24136@gmail.com" class="flex items-center gap-3 text-[11px] font-bold text-gray-500 hover:text-primary-cyan transition-all">
+                                <div class="w-8 h-8 rounded-lg bg-white/5 border border-white/5 flex items-center justify-center group-hover:border-primary-cyan/30 transition-all">
+                                    <i data-lucide="mail" class="w-3.5 h-3.5 text-primary-cyan"></i>
+                                </div>
+                                <span class="truncate">mohanad.mohamed.24136@gmail.com</span>
+                            </a>
+                        </li>
+                        <li class="group">
+                            <a href="https://wa.me/201040777944" target="_blank" class="flex items-center gap-3 text-[11px] font-bold text-gray-500 hover:text-primary-magenta transition-all">
+                                <div class="w-8 h-8 rounded-lg bg-white/5 border border-white/5 flex items-center justify-center group-hover:border-primary-magenta/30 transition-all">
+                                    <i data-lucide="phone" class="w-3.5 h-3.5 text-primary-magenta"></i>
+                                </div>
+                                <span>+20 104 077 7944</span>
+                            </a>
+                        </li>
+                        <li class="group">
+                            <a href="#" class="flex items-center gap-3 text-[11px] font-bold text-gray-500 hover:text-primary-gold transition-all">
+                                <div class="w-8 h-8 rounded-lg bg-white/5 border border-white/5 flex items-center justify-center group-hover:border-primary-gold/30 transition-all">
+                                    <i data-lucide="package" class="w-3.5 h-3.5 text-primary-gold"></i>
+                                </div>
+                                <span>Logistics Protocol</span>
+                            </a>
+                        </li>
+                        <li class="group">
+                            <a href="#" class="flex items-center gap-3 text-[11px] font-bold text-gray-500 hover:text-white transition-all">
+                                <div class="w-8 h-8 rounded-lg bg-white/5 border border-white/5 flex items-center justify-center group-hover:border-white/20 transition-all">
+                                    <i data-lucide="ruler" class="w-3.5 h-3.5 text-gray-400"></i>
+                                </div>
+                                <span>Returns & Sizing</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Newsletter -->
+                <div class="space-y-8 text-left">
+                    <h4 class="text-[10px] font-black uppercase tracking-[0.3em] text-white">Neural Briefing</h4>
+                    <p class="text-gray-500 text-[10px] font-black uppercase tracking-widest leading-relaxed">Subscribe for exclusive collection drops.</p>
+                    <div class="relative group/mail">
+                        <input type="email" placeholder="NEURAL ADDRESS" 
+                            class="w-full bg-white/5 border border-white/5 rounded-2xl py-4 px-6 text-[10px] font-black uppercase tracking-widest placeholder:text-white/10 focus:bg-white/10 outline-none transition-all">
+                        <button class="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-white text-black rounded-xl flex items-center justify-center hover:bg-primary-cyan transition-colors">
+                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
+                <p class="text-gray-600 text-[10px] font-black uppercase tracking-[0.3em]">
+                    © 2026 LUMINA FUTURE OF FASHION ARCHITECTURE. ALL RIGHTS RESERVED.
+                </p>
+                <div class="flex space-x-10 text-[10px] font-black uppercase tracking-widest text-gray-600">
+                    <a href="#" class="hover:text-white transition-colors">Privacy Protocol</a>
+                    <a href="#" class="hover:text-white transition-colors">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/script.js"></script>
+    <script>
+        // Emergency icon initialization
+        if (window.lucide) {
+            lucide.createIcons();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // User state is managed by script.js via cookies
+        });
+        
+        function setPrompt(text) {
+            document.getElementById('prompt-input').value = text;
+        }
+
+        function simulateGenerate() {
+            const prompt = document.getElementById('prompt-input').value.trim();
+            if(!prompt) {
+                showToast(currentLang === 'ar' ? 'يرجى كتابة وصف أولاً' : 'Please enter a description first', 'error');
+                return;
+            }
+
+            const grid = document.getElementById('results-grid');
+            const loading = document.getElementById('loading-state');
+            const btn = document.getElementById('generate-btn');
+
+            btn.disabled = true;
+            loading.classList.remove('hidden');
+            grid.classList.add('hidden');
+            
+            // Add matrix effect simulation
+            loading.innerHTML = `
+                <div class="relative">
+                    <div class="w-24 h-24 border-2 border-primary-cyan/20 rounded-full"></div>
+                    <div class="absolute inset-0 w-24 h-24 border-t-2 border-primary-cyan rounded-full animate-spin"></div>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <i data-lucide="cpu" class="w-8 h-8 text-primary-cyan animate-pulse"></i>
+                    </div>
+                </div>
+                <div class="text-center space-y-2">
+                    <p class="text-xs font-black uppercase tracking-[0.4em] text-primary-cyan animate-pulse">Neural Synthesis Protocol: Active</p>
+                    <p id="loading-step" class="text-[8px] font-bold text-gray-500 uppercase tracking-widest">Initializing fabric patterns...</p>
+                </div>
+            `;
+            if (window.lucide) lucide.createIcons();
+
+            const steps = [
+                'Analyzing vision architecture...',
+                'Synthesizing neural fabrics...',
+                'Applying holographic textures...',
+                'Finalizing aesthetic parameters...'
+            ];
+            let stepIdx = 0;
+            const stepInterval = setInterval(() => {
+                const stepEl = document.getElementById('loading-step');
+                if (stepEl) stepEl.textContent = steps[stepIdx];
+                stepIdx = (stepIdx + 1) % steps.length;
+            }, 700);
+
+            setTimeout(() => {
+                clearInterval(stepInterval);
+                loading.classList.add('hidden');
+                grid.classList.remove('hidden');
+                btn.disabled = false;
+                
+                showToast(currentLang === 'ar' ? 'تم توليد التصاميم بنجاح' : 'Designs synthesized successfully');
+
+                const enhancedPrompt = `${prompt}, high fashion photography, professional lighting, clean background, 8k resolution, detailed fabric texture, avant-garde style`;
+                const encodedPrompt = encodeURIComponent(enhancedPrompt);
+                
+                let images = Array.from({length: 4}).map((_, i) => 
+                    `https://image.pollinations.ai/prompt/${encodedPrompt}?width=800&height=1000&nologo=true&seed=${Math.floor(Math.random()*100000)}`
+                );
+
+                let displayTitle = prompt.split(' ').slice(0, 3).join(' ').toUpperCase();
+                if (displayTitle.length < 3) displayTitle = "AI SYNTHESIS";
+
+                grid.innerHTML = images.map((url, index) => `
+                    <div class="group relative rounded-[2rem] md:rounded-[3rem] overflow-hidden glass border border-white/5 hover:border-primary-cyan/50 transition-all duration-700 animate-fade-in" style="animation-delay: ${index * 0.2}s">
+                        <div class="aspect-[4/5] overflow-hidden relative bg-white/5">
+                            <div class="absolute inset-0 flex items-center justify-center opacity-20" id="loader-${index}">
+                                <div class="w-8 h-8 border-2 border-primary-cyan border-t-transparent rounded-full animate-spin"></div>
+                            </div>
+                            
+                            <img src="${url}" crossorigin="anonymous"
+                                 onload="document.getElementById('loader-${index}').style.display='none'"
+                                 onerror="this.src='https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&q=80&w=800'; document.getElementById('loader-${index}').style.display='none'"
+                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000">
+                            
+                            <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>
+                            
+                            <div class="absolute bottom-4 md:bottom-8 left-4 md:left-8 right-4 md:right-8 space-y-2 md:space-y-4 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] text-primary-cyan">Variant ${index + 1}</p>
+                                        <h3 class="text-sm md:text-xl font-black tracking-tighter uppercase truncate max-w-[120px] md:max-w-none">${displayTitle}</h3>
+                                    </div>
+                                    <button onclick="window.open('${url}')" class="w-8 h-8 md:w-12 md:h-12 glass rounded-full flex items-center justify-center hover:bg-primary-cyan hover:text-black transition-all">
+                                        <i data-lucide="download" class="w-4 h-4 md:w-5 md:h-5"></i>
+                                    </button>
+                                </div>
+                                <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                                    <button onclick="publishDesign('${url}', '${displayTitle}')" class="flex-1 bg-white text-black py-2 md:py-3 rounded-lg md:rounded-xl font-black text-[8px] md:text-[10px] uppercase tracking-widest hover:bg-primary-cyan transition-colors">Publish to Store</button>
+                                    <button class="w-8 h-8 md:w-12 md:h-12 glass rounded-lg md:rounded-xl flex items-center justify-center hover:bg-primary-magenta transition-all">
+                                        <i data-lucide="heart" class="w-4 h-4 md:w-5 md:h-5"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                if (window.lucide) lucide.createIcons();
+            }, 3000);
+        }
+
+        async function publishDesign(url, title) {
+            const userId = getCookie('userId');
+            const userEmail = getCookie('userEmail');
+            
+            if (!userId || !userEmail) {
+                showToast(currentLang === 'ar' ? 'يجب تسجيل الدخول أولاً' : 'Please login first', 'error');
+                return;
+            }
+
+            const description = document.getElementById('prompt-input').value.trim();
+            const price = (Math.random() * (500 - 100) + 100).toFixed(2); // Random price between 100 and 500
+
+            try {
+                const response = await fetch(`${API_BASE}/ai/publish`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: title,
+                        architect: 'LUMINA AI',
+                        price: price,
+                        email: userEmail,
+                        img: url,
+                        description: description
+                    })
+                });
+
+                if (response.ok) {
+                    showToast(currentLang === 'ar' ? 'تم نشر التصميم في المتجر بنجاح' : 'Design published to store successfully');
+                } else {
+                    const data = await response.json();
+                    showToast(data.error || 'Failed to publish design', 'error');
+                }
+            } catch (err) {
+                console.error('Publish Error:', err);
+                showToast('Network error, please try again', 'error');
+            }
+        }
+    </script>
+</body>
+</html>

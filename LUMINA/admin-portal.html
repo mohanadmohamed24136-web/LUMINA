@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUMINA | Admin Control Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script>
+        // Global API Base
+        window.API_BASE = window.location.origin.includes('localhost') ? 'http://localhost:3000/api' : `${window.location.origin}/api`;
+
+        // Check Admin authentication
+        function getCookie(name) {
+            let nameEQ = name + "=";
+            let ca = document.cookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+
+        async function verifyAdmin() {
+            const userId = getCookie('userId');
+            if (!userId) { window.location.href = 'login.html'; return; }
+            try {
+                const response = await fetch(`${API_BASE}/auth/profile?id=${userId}`);
+                if (response.ok) {
+                    const user = await response.json();
+                    if (user.role !== 'admin') {
+                        alert('Unauthorized Access: Admin Protocol Required');
+                        window.location.href = 'index.html';
+                    }
+                } else { window.location.href = 'login.html'; }
+            } catch (err) { window.location.href = 'login.html'; }
+        }
+        verifyAdmin();
+
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: { colors: { primary: { cyan: "#00F0FF", magenta: "#FF00AA", gold: "#FFD700" }, dark: { bg: "#050505" } } } }
+        }
+    </script>
+</head>
+<body class="dark bg-dark-bg text-white selection:bg-primary-cyan/30">
+    <div class="bg-mesh"></div>
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 glass py-3 md:py-4 px-4 md:px-8 mx-2 md:mx-6 mt-4 md:mt-6 rounded-2xl md:rounded-[2.5rem] border-white/5 flex justify-between items-center">
+        <a href="index.html" class="text-xl md:text-3xl font-black bg-gradient-to-r from-primary-cyan via-primary-magenta to-primary-gold bg-clip-text text-transparent tracking-tighter uppercase shrink-0">
+            LUMINA <span class="text-[8px] md:text-[10px] text-white/40 tracking-[0.2em] md:tracking-[0.5em] ml-2 md:ml-4 font-bold">Admin OS</span>
+        </a>
+        <div class="flex items-center gap-3 md:gap-6">
+            <div id="admin-user-info" class="hidden sm:flex items-center gap-2 md:gap-3 glass px-3 md:px-4 py-1.5 md:py-2 rounded-xl md:rounded-2xl border-white/5">
+                <div class="w-6 h-6 md:w-8 md:h-8 rounded-lg bg-gradient-to-br from-primary-cyan to-primary-magenta flex items-center justify-center text-[8px] md:text-[10px] font-black">AD</div>
+                <span class="user-name text-[8px] md:text-[10px] font-black uppercase tracking-widest hidden md:inline">Admin</span>
+            </div>
+            <button onclick="logout()" class="p-2 md:p-3 bg-red-500/10 text-red-500 rounded-xl md:rounded-2xl border border-red-500/20 hover:bg-red-500/20 transition-all">
+                <i data-lucide="log-out" class="w-4 h-4 md:w-5 md:h-5"></i>
+            </button>
+        </div>
+    </nav>
+
+    <div class="container mx-auto p-4 md:p-8 lg:p-12">
+        <div class="flex flex-col lg:grid lg:grid-cols-4 gap-8 md:gap-12">
+            <!-- Sidebar (Horizontal Scroll on Mobile) -->
+            <aside class="lg:col-span-1 overflow-x-auto lg:overflow-visible pb-4 lg:pb-0 scrollbar-hide">
+                <div class="glass p-6 md:p-8 rounded-3xl md:rounded-[4rem] border border-white/5 flex lg:flex-col items-center lg:items-stretch gap-6 md:gap-12 lg:sticky lg:top-32 h-fit">
+                    <!-- Profile Section (Hidden on Mobile) -->
+                    <div class="hidden lg:block space-y-6 text-center">
+                        <div class="w-20 h-20 md:w-24 md:h-24 rounded-full bg-primary-cyan/5 border-2 border-primary-cyan/30 flex items-center justify-center mx-auto shadow-[0_0_30px_rgba(0,240,255,0.1)]">
+                            <i data-lucide="shield-check" class="w-8 h-8 md:w-10 md:h-10 text-primary-cyan"></i>
+                        </div>
+                        <div>
+                            <h2 class="user-name text-lg md:text-2xl font-black uppercase tracking-tighter text-white leading-none">MOHANAD<br>MOHAMED NABIL</h2>
+                            <p class="text-[8px] md:text-[10px] text-primary-cyan font-black uppercase tracking-[0.2em] mt-3">Master Protocol</p>
+                        </div>
+                    </div>
+
+                    <!-- Navigation -->
+                    <nav class="flex lg:flex-col gap-3 shrink-0">
+                        <button onclick="showAdminTab('overview')" class="admin-tab-btn flex items-center gap-3 md:gap-4 px-6 md:px-8 py-3 md:py-5 rounded-2xl md:rounded-[2rem] transition-all group shrink-0">
+                            <i data-lucide="layout-grid" class="w-4 h-4 md:w-5 md:h-5"></i>
+                            <span class="text-[9px] md:text-[11px] font-black uppercase tracking-widest">Overview</span>
+                        </button>
+                        <button onclick="showAdminTab('products')" class="admin-tab-btn flex items-center justify-center gap-3 md:gap-4 px-6 md:px-8 py-3 md:py-5 rounded-2xl md:rounded-[2rem] transition-all group shrink-0">
+                            <i data-lucide="package" class="w-4 h-4 md:w-5 md:h-5"></i>
+                            <span class="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-center whitespace-nowrap lg:whitespace-normal">Product Moderation</span>
+                        </button>
+                        <button onclick="showAdminTab('orders')" class="admin-tab-btn flex items-center justify-center gap-3 md:gap-4 px-6 md:px-8 py-3 md:py-5 rounded-2xl md:rounded-[2rem] transition-all group shrink-0">
+                            <i data-lucide="shopping-cart" class="w-4 h-4 md:w-5 md:h-5"></i>
+                            <span class="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-center whitespace-nowrap lg:whitespace-normal">Order Management</span>
+                        </button>
+                        <button onclick="showAdminTab('designers')" class="admin-tab-btn flex items-center justify-center gap-3 md:gap-4 px-6 md:px-8 py-3 md:py-5 rounded-2xl md:rounded-[2rem] transition-all group shrink-0">
+                            <i data-lucide="palette" class="w-4 h-4 md:w-5 md:h-5"></i>
+                            <span class="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-center">Designers</span>
+                        </button>
+                        <button onclick="showAdminTab('feedback')" class="admin-tab-btn flex items-center justify-center gap-3 md:gap-4 px-6 md:px-8 py-3 md:py-5 rounded-2xl md:rounded-[2rem] transition-all group shrink-0">
+                            <i data-lucide="message-square" class="w-4 h-4 md:w-5 md:h-5"></i>
+                            <span class="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-center whitespace-nowrap lg:whitespace-normal">User Feedback</span>
+                        </button>
+                        <button onclick="showAdminTab('finance')" class="admin-tab-btn btn-finance flex items-center justify-center gap-3 md:gap-4 px-6 md:px-8 py-3 md:py-5 rounded-2xl md:rounded-[2rem] transition-all group shrink-0">
+                            <i data-lucide="banknote" class="w-4 h-4 md:w-5 md:h-5"></i>
+                            <span class="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-center whitespace-nowrap lg:whitespace-normal">Financial Ledger</span>
+                        </button>
+                        <button onclick="showAdminTab('users')" class="admin-tab-btn flex items-center justify-center gap-3 md:gap-4 px-6 md:px-8 py-3 md:py-5 rounded-2xl md:rounded-[2rem] transition-all group shrink-0">
+                            <i data-lucide="users" class="w-4 h-4 md:w-5 md:h-5"></i>
+                            <span class="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-center whitespace-nowrap lg:whitespace-normal">User Database</span>
+                        </button>
+                    </nav>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="lg:col-span-3 space-y-12 md:space-y-16">
+                
+                <!-- Overview Tab -->
+                <section id="admin-tab-overview" class="admin-tab space-y-12 md:space-y-16">
+                    <header class="space-y-4 md:space-y-6">
+                        <div class="inline-flex items-center space-x-3 glass px-4 md:px-5 py-2 rounded-full border-white/10">
+                            <span class="w-2 h-2 bg-primary-cyan rounded-full animate-pulse"></span>
+                            <span class="text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em]">System Protocol Active</span>
+                        </div>
+                        <h1 class="text-5xl sm:text-7xl md:text-9xl font-black tracking-tighter uppercase leading-[0.9] md:leading-none">Command <br> <span class="bg-gradient-to-r from-primary-cyan via-primary-magenta to-primary-gold bg-clip-text text-transparent">Center</span></h1>
+                    </header>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-10">
+                        <!-- Revenue -->
+                        <div class="glass p-8 md:p-12 rounded-3xl md:rounded-[4rem] border-white/5 hover:border-primary-cyan/40 transition-all group relative overflow-hidden transform hover:-translate-y-2 duration-500 flex items-center gap-6 md:gap-10 min-h-[180px] md:min-h-[280px]">
+                            <div class="absolute inset-0 bg-gradient-to-br from-primary-cyan/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div class="w-16 h-16 md:w-24 md:h-24 bg-white/5 rounded-2xl md:rounded-[2.5rem] flex items-center justify-center border border-white/5 group-hover:bg-primary-cyan/10 group-hover:border-primary-cyan/20 transition-all shrink-0">
+                                <i data-lucide="banknote" class="w-8 h-8 md:w-12 md:h-12 text-primary-cyan"></i>
+                            </div>
+                            <div class="relative z-10 space-y-1 md:space-y-2">
+                                <h3 id="admin-stat-revenue" class="text-4xl md:text-7xl font-black tracking-tighter uppercase leading-none text-white">$0</h3>
+                                <p class="text-[10px] md:text-[12px] font-black uppercase tracking-[0.3em] md:tracking-[0.5em] text-gray-500 group-hover:text-primary-cyan transition-colors">Total Net Revenue</p>
+                            </div>
+                        </div>
+                        <!-- Orders -->
+                        <div class="glass p-8 md:p-12 rounded-3xl md:rounded-[4rem] border-white/5 hover:border-primary-magenta/40 transition-all group relative overflow-hidden transform hover:-translate-y-2 duration-500 flex items-center gap-6 md:gap-10 min-h-[180px] md:min-h-[280px]">
+                            <div class="absolute inset-0 bg-gradient-to-br from-primary-magenta/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div class="w-16 h-16 md:w-24 md:h-24 bg-white/5 rounded-2xl md:rounded-[2.5rem] flex items-center justify-center border border-white/5 group-hover:bg-primary-magenta/10 group-hover:border-primary-magenta/20 transition-all shrink-0">
+                                <i data-lucide="shopping-cart" class="w-8 h-8 md:w-12 md:h-12 text-primary-magenta"></i>
+                            </div>
+                            <div class="relative z-10 space-y-1 md:space-y-2">
+                                <h3 id="admin-stat-orders" class="text-4xl md:text-7xl font-black tracking-tighter uppercase leading-none text-white">0</h3>
+                                <p class="text-[10px] md:text-[12px] font-black uppercase tracking-[0.3em] md:tracking-[0.5em] text-gray-500 group-hover:text-primary-magenta transition-colors">Global Orders</p>
+                            </div>
+                        </div>
+                        <!-- Designers -->
+                        <div class="glass p-8 md:p-12 rounded-3xl md:rounded-[4rem] border-white/5 hover:border-primary-gold/40 transition-all group relative overflow-hidden transform hover:-translate-y-2 duration-500 flex items-center gap-6 md:gap-10 min-h-[180px] md:min-h-[280px]">
+                            <div class="absolute inset-0 bg-gradient-to-br from-primary-gold/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div class="w-16 h-16 md:w-24 md:h-24 bg-white/5 rounded-2xl md:rounded-[2.5rem] flex items-center justify-center border border-white/5 group-hover:bg-primary-gold/10 group-hover:border-primary-gold/20 transition-all shrink-0">
+                                <i data-lucide="palette" class="w-8 h-8 md:w-12 md:h-12 text-primary-gold"></i>
+                            </div>
+                            <div class="relative z-10 space-y-1 md:space-y-2">
+                                <h3 id="admin-stat-designers" class="text-4xl md:text-7xl font-black tracking-tighter uppercase leading-none text-white">0</h3>
+                                <p class="text-[10px] md:text-[12px] font-black uppercase tracking-[0.3em] md:tracking-[0.5em] text-gray-500 group-hover:text-primary-gold transition-colors">Active Architects</p>
+                            </div>
+                        </div>
+                        <!-- Pending -->
+                        <div class="glass p-8 md:p-12 rounded-3xl md:rounded-[4rem] border-white/5 hover:border-primary-cyan/40 transition-all group relative overflow-hidden transform hover:-translate-y-2 duration-500 flex items-center gap-6 md:gap-10 min-h-[180px] md:min-h-[280px]">
+                            <div class="absolute inset-0 bg-gradient-to-br from-primary-cyan/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div class="w-16 h-16 md:w-24 md:h-24 bg-white/5 rounded-2xl md:rounded-[2.5rem] flex items-center justify-center border border-white/5 group-hover:bg-primary-cyan/10 group-hover:border-primary-cyan/20 transition-all shrink-0">
+                                <i data-lucide="package" class="w-8 h-8 md:w-12 md:h-12 text-primary-cyan"></i>
+                            </div>
+                            <div class="relative z-10 space-y-1 md:space-y-2">
+                                <h3 id="admin-stat-pending" class="text-4xl md:text-7xl font-black tracking-tighter uppercase leading-none text-white">0</h3>
+                                <p class="text-[10px] md:text-[12px] font-black uppercase tracking-[0.3em] md:tracking-[0.5em] text-gray-500 group-hover:text-primary-cyan transition-colors">Pending Assets</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Neural Analytics Charts Section -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                        <!-- Revenue Trajectory -->
+                        <div class="glass p-10 rounded-[3.5rem] border border-white/5 space-y-8">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-2xl font-black uppercase tracking-tighter text-white">Revenue Trajectory</h3>
+                                <div class="w-10 h-10 bg-primary-cyan/10 rounded-xl flex items-center justify-center">
+                                    <i data-lucide="trending-up" class="w-5 h-5 text-primary-cyan"></i>
+                                </div>
+                            </div>
+                            <div class="h-[300px] w-full relative">
+                                <canvas id="adminRevenueChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- User Distribution -->
+                        <div class="glass p-10 rounded-[3.5rem] border border-white/5 space-y-8">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-2xl font-black uppercase tracking-tighter text-white">User Base Distribution</h3>
+                                <div class="w-10 h-10 bg-primary-magenta/10 rounded-xl flex items-center justify-center">
+                                    <i data-lucide="users" class="w-5 h-5 text-primary-magenta"></i>
+                                </div>
+                            </div>
+                            <div class="h-[300px] w-full relative">
+                                <canvas id="adminUserChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Order Fulfillment Status -->
+                        <div class="glass p-10 rounded-[3.5rem] border border-white/5 space-y-8">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-2xl font-black uppercase tracking-tighter text-white">Logistics Fulfillment</h3>
+                                <div class="w-10 h-10 bg-primary-gold/10 rounded-xl flex items-center justify-center">
+                                    <i data-lucide="package-check" class="w-5 h-5 text-primary-gold"></i>
+                                </div>
+                            </div>
+                            <div class="h-[300px] w-full relative">
+                                <canvas id="adminOrderChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Top Categories / Products -->
+                        <div class="glass p-10 rounded-[3.5rem] border border-white/5 space-y-8">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-2xl font-black uppercase tracking-tighter text-white">Asset Performance</h3>
+                                <div class="w-10 h-10 bg-primary-cyan/10 rounded-xl flex items-center justify-center">
+                                    <i data-lucide="activity" class="w-5 h-5 text-primary-cyan"></i>
+                                </div>
+                            </div>
+                            <div class="h-[300px] w-full relative">
+                                <canvas id="adminAssetChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Neural Activity Log Section -->
+                    <div class="glass p-12 rounded-[4rem] border border-white/5 relative overflow-hidden group">
+                        <div class="absolute -top-24 -right-24 w-96 h-96 bg-primary-cyan/5 rounded-full blur-[100px] group-hover:bg-primary-cyan/10 transition-all duration-700"></div>
+                        <div class="relative z-10">
+                            <div class="flex justify-between items-center mb-10">
+                                <h3 class="text-4xl font-black uppercase tracking-tighter text-white">Neural Activity Log</h3>
+                                <button onclick="loadAdminOverview()" class="p-4 glass rounded-2xl hover:bg-white/10 transition-all border border-white/5">
+                                    <i data-lucide="refresh-cw" class="w-5 h-5 text-primary-cyan"></i>
+                                </button>
+                            </div>
+                            <div id="recent-activity-log" class="space-y-6">
+                                <!-- Activity will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Moderation Tab -->
+                <section id="admin-tab-products" class="admin-tab hidden space-y-12">
+                    <h2 class="text-7xl font-black tracking-tighter uppercase">Asset <span class="text-primary-magenta">Moderation</span></h2>
+                    <div id="admin-products-list" class="space-y-8"></div>
+                </section>
+
+                <!-- Designers Tab -->
+                <section id="admin-tab-designers" class="admin-tab hidden space-y-12">
+                    <h2 class="text-7xl font-black tracking-tighter uppercase">Active <span class="text-primary-gold">Architects</span></h2>
+                    <div id="admin-designers-list" class="grid grid-cols-1 md:grid-cols-2 gap-8"></div>
+                </section>
+
+                <!-- Logistics Tab -->
+                <section id="admin-tab-orders" class="admin-tab hidden space-y-12">
+                    <h2 class="text-7xl font-black tracking-tighter uppercase">Logistics <span class="text-primary-gold">Control</span></h2>
+                    <div id="admin-orders-list" class="space-y-8"></div>
+                </section>
+
+                <!-- Neural Base Tab -->
+                <section id="admin-tab-users" class="admin-tab hidden space-y-12">
+                    <h2 class="text-7xl font-black tracking-tighter uppercase">Neural <span class="text-primary-cyan">Database</span></h2>
+                    <div class="glass rounded-[3.5rem] border border-white/5 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="border-b border-white/5 bg-white/5">
+                                        <th class="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Identity</th>
+                                        <th class="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Protocol</th>
+                                        <th class="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Status</th>
+                                        <th class="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-users-list" class="divide-y divide-white/5"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Sentiment Tab -->
+                <section id="admin-tab-feedback" class="admin-tab hidden space-y-12">
+                    <h2 class="text-7xl font-black tracking-tighter uppercase">User <span class="text-primary-magenta">Sentiment</span></h2>
+                    <div id="admin-feedback-list" class="grid grid-cols-1 md:grid-cols-2 gap-8"></div>
+                </section>
+
+                <!-- Finance Tab -->
+                <section id="admin-tab-finance" class="admin-tab hidden space-y-12">
+                    <h2 class="text-7xl font-black tracking-tighter uppercase">Fiscal <span class="text-primary-gold">Ledger</span></h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                        <div class="glass p-12 rounded-[3.5rem] border-primary-gold/20">
+                            <p class="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2">Total Net Capital</p>
+                            <h2 id="admin-finance-revenue" class="text-7xl font-black tracking-tighter">$0</h2>
+                        </div>
+                        <div class="glass p-12 rounded-[3.5rem] border-white/5">
+                            <p class="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2">Global Transactions</p>
+                            <h2 id="admin-finance-count" class="text-7xl font-black tracking-tighter">0</h2>
+                        </div>
+                    </div>
+                    <div id="admin-finance-list" class="space-y-6"></div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <style>
+        .admin-tab-btn {
+            background: rgba(255, 255, 255, 0.05);
+            color: #666;
+            border: 1px solid transparent;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .admin-tab-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        .admin-tab-btn.active-white {
+            background: transparent;
+            color: white;
+            border: 1px solid white;
+        }
+        .admin-tab-btn.active-cyan {
+            background: rgba(0, 240, 255, 0.1);
+            color: #00F0FF;
+            border: 1px solid rgba(0, 240, 255, 0.2);
+        }
+        .admin-tab-btn i { transition: color 0.3s; }
+        .btn-finance i { color: #FFD700 !important; }
+    </style>
+
+    <script>
+        function showAdminTab(tabId) {
+            // Hide all tabs
+            document.querySelectorAll('.admin-tab').forEach(t => t.classList.add('hidden'));
+            const targetTab = document.getElementById(`admin-tab-${tabId}`);
+            if (targetTab) targetTab.classList.remove('hidden');
+            
+            // Reset all buttons
+            document.querySelectorAll('.admin-tab-btn').forEach(btn => {
+                btn.classList.remove('active-white', 'active-cyan');
+            });
+
+            // Find current button
+            const activeBtn = Array.from(document.querySelectorAll('.admin-tab-btn')).find(b => b.getAttribute('onclick').includes(`'${tabId}'`));
+            
+            if (activeBtn) {
+                if (tabId === 'overview') {
+                    activeBtn.classList.add('active-white');
+                } else if (tabId === 'users') {
+                    activeBtn.classList.add('active-cyan');
+                } else {
+                    activeBtn.classList.add('active-white'); // Default active style
+                }
+            }
+
+            // Load data
+            const loadFunc = `loadAdmin${tabId.charAt(0).toUpperCase() + tabId.slice(1)}`;
+            if (typeof window[loadFunc] === 'function') {
+                window[loadFunc]();
+            }
+        }
+
+        async function loadAdminOverview() {
+            try {
+                const res = await fetch(`${API_BASE}/admin/stats`);
+                const stats = await res.json();
+                document.getElementById('admin-stat-revenue').textContent = `$${parseFloat(stats.revenue || 0).toLocaleString()}`;
+                document.getElementById('admin-stat-orders').textContent = stats.orders || 0;
+                document.getElementById('admin-stat-designers').textContent = stats.designers || 0;
+                document.getElementById('admin-stat-pending').textContent = stats.pending || 0;
+
+                // Load Charts
+                initAdminCharts(stats);
+
+                // Load recent activity log
+                const logContainer = document.getElementById('recent-activity-log');
+                const activities = [
+                    { type: 'security', msg: 'Admin Protocol Verified', time: 'Just now' },
+                    { type: 'asset', msg: `System detected ${stats.pending} pending assets`, time: '2 mins ago' },
+                    { type: 'user', msg: `Network synchronized with ${stats.designers} architects`, time: '5 mins ago' }
+                ];
+                logContainer.innerHTML = activities.map(a => `
+                    <div class="flex items-center justify-between p-6 glass rounded-2xl border border-white/5 hover:bg-white/5 transition-all">
+                        <div class="flex items-center gap-6">
+                            <div class="w-2 h-2 rounded-full bg-primary-cyan animate-pulse"></div>
+                            <p class="text-sm font-bold text-gray-300 uppercase tracking-tighter">${a.msg}</p>
+                        </div>
+                        <span class="text-[9px] font-black text-gray-600 uppercase tracking-widest">${a.time}</span>
+                    </div>
+                `).join('');
+            } catch (err) { console.error(err); }
+        }
+
+        let adminRevenueChart, adminUserChart, adminOrderChart, adminAssetChart;
+
+        function initAdminCharts(stats) {
+            const chartConfig = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { color: '#666', font: { weight: 'bold', size: 10 } }
+                    }
+                },
+                scales: {
+                    y: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#666' } },
+                    x: { grid: { display: false }, ticks: { color: '#666' } }
+                }
+            };
+
+            // 1. Revenue Chart (Line)
+            const revCtx = document.getElementById('adminRevenueChart').getContext('2d');
+            if (adminRevenueChart) adminRevenueChart.destroy();
+            adminRevenueChart = new Chart(revCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Net Capital ($)',
+                        data: [stats.revenue * 0.4, stats.revenue * 0.6, stats.revenue * 0.5, stats.revenue * 0.8, stats.revenue * 0.9, stats.revenue],
+                        borderColor: '#00F0FF',
+                        backgroundColor: 'rgba(0, 240, 255, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: chartConfig
+            });
+
+            // 2. User Distribution (Doughnut)
+            const userCtx = document.getElementById('adminUserChart').getContext('2d');
+            if (adminUserChart) adminUserChart.destroy();
+            adminUserChart = new Chart(userCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Architects', 'Customers', 'Admins'],
+                    datasets: [{
+                        data: [stats.designers, stats.designers * 4, 1],
+                        backgroundColor: ['#FFD700', '#00F0FF', '#FF00AA'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { ...chartConfig, cutout: '70%' }
+            });
+
+            // 3. Logistics Fulfillment (Bar)
+            const orderCtx = document.getElementById('adminOrderChart').getContext('2d');
+            if (adminOrderChart) adminOrderChart.destroy();
+            adminOrderChart = new Chart(orderCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Processing', 'Shipped', 'Delivered', 'Cancelled'],
+                    datasets: [{
+                        label: 'Order Volume',
+                        data: [stats.orders * 0.3, stats.orders * 0.4, stats.orders * 0.2, stats.orders * 0.1],
+                        backgroundColor: '#FFD700',
+                        borderRadius: 8
+                    }]
+                },
+                options: chartConfig
+            });
+
+            // 4. Asset Performance (Radar or PolarArea)
+            const assetCtx = document.getElementById('adminAssetChart').getContext('2d');
+            if (adminAssetChart) adminAssetChart.destroy();
+            adminAssetChart = new Chart(assetCtx, {
+                type: 'polarArea',
+                data: {
+                    labels: ['Elite Couture', 'Neural Patterns', 'Streetwear', 'Accessories'],
+                    datasets: [{
+                        data: [25, 40, 15, 20],
+                        backgroundColor: ['rgba(0, 240, 255, 0.5)', 'rgba(255, 0, 170, 0.5)', 'rgba(255, 215, 0, 0.5)', 'rgba(255, 255, 255, 0.2)'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    ...chartConfig,
+                    scales: {
+                        r: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { display: false } }
+                    }
+                }
+            });
+        }
+
+        async function loadAdminProducts() {
+            const container = document.getElementById('admin-products-list');
+            container.innerHTML = '<div class="py-20 text-center"><div class="w-10 h-10 border-4 border-primary-magenta border-t-transparent rounded-full animate-spin mx-auto mb-6"></div><p class="text-[10px] font-black uppercase tracking-widest text-gray-500">Accessing Neural Assets...</p></div>';
+            try {
+                const res = await fetch(`${API_BASE}/admin/products`);
+                const products = await res.json();
+                container.innerHTML = products.map(p => `
+                    <div class="glass p-10 rounded-[4rem] border border-white/5 flex flex-col md:flex-row gap-10 items-center group">
+                        <div class="w-48 h-48 rounded-[2.5rem] overflow-hidden border border-white/10 shrink-0">
+                            <img src="${p.img.startsWith('http') ? p.img : API_BASE.replace('/api', '') + p.img}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        </div>
+                        <div class="flex-1 space-y-6 w-full text-left">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="text-3xl font-black uppercase tracking-tighter text-white">${p.name}</h3>
+                                    <p class="text-[11px] font-black text-primary-cyan uppercase tracking-widest mt-2">By ${p.architect}</p>
+                                </div>
+                                <div class="text-right shrink-0">
+                                    <p class="text-3xl font-black text-white">$${p.price}</p>
+                                    <span class="px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest mt-2 inline-block ${p.status === 'pending' ? 'bg-yellow-500/10 text-yellow-500' : 'bg-green-500/10 text-green-500 border border-green-500/20'}">${p.status}</span>
+                                </div>
+                            </div>
+                            <div class="flex gap-4 pt-4 border-t border-white/5">
+                                ${p.status === 'pending' ? `
+                                    <button onclick="updateProductStatus(${p.id}, 'approved')" class="px-10 py-5 bg-primary-magenta text-black rounded-2xl font-black text-[10px] uppercase tracking-widest hover:scale-105 transition-all shadow-[0_0_30px_rgba(255,0,170,0.2)]">Authorize Asset</button>
+                                    <button onclick="updateProductStatus(${p.id}, 'rejected')" class="px-10 py-5 bg-white/5 text-red-500 border border-red-500/20 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-red-500/10 transition-all">Reject Protocol</button>
+                                ` : `
+                                    <button onclick="deleteProduct(${p.id})" class="px-10 py-5 bg-red-500/10 text-red-500 border border-red-500/20 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-red-500/20 transition-all">Decommission</button>
+                                `}
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                lucide.createIcons();
+            } catch (err) { container.innerHTML = '<p class="text-center py-20 text-red-500 font-black uppercase text-[10px] tracking-widest">Protocol Failure: Data Link Interrupted</p>'; }
+        }
+
+        async function updateProductStatus(id, status) {
+            await fetch(`${API_BASE}/admin/products/${id}/status`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status })
+            });
+            loadAdminProducts();
+            loadAdminOverview();
+        }
+
+        async function deleteProduct(id) {
+            if (!confirm('Execute decommissioning protocol for this asset?')) return;
+            try {
+                const response = await fetch(`${API_BASE}/products/${id}`, { method: 'DELETE' });
+                if (response.ok) {
+                    loadAdminProducts();
+                    loadAdminOverview();
+                }
+            } catch (err) {
+                console.error('Delete Asset Error:', err);
+            }
+        }
+
+        async function loadAdminOrders() {
+            const container = document.getElementById('admin-orders-list');
+            container.innerHTML = '<div class="py-20 text-center"><div class="w-10 h-10 border-4 border-primary-gold border-t-transparent rounded-full animate-spin mx-auto mb-6"></div><p class="text-[10px] font-black uppercase tracking-widest text-gray-500">Tracking Global Logistics...</p></div>';
+            try {
+                const res = await fetch(`${API_BASE}/admin/orders`);
+                const orders = await res.json();
+                container.innerHTML = orders.map(o => `
+                    <div class="glass p-10 rounded-[4rem] border border-white/5 space-y-8 group hover:border-primary-gold/20 transition-all">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h4 class="text-3xl font-black uppercase tracking-tighter text-white">#${o.order_id}</h4>
+                                <p class="text-[10px] font-black text-gray-500 uppercase tracking-widest mt-1">${o.user_email}</p>
+                            </div>
+                            <div class="flex items-center gap-6">
+                                <select onchange="updateOrderStatus(${o.id}, this.value)" class="bg-[#111] border border-white/10 rounded-2xl px-6 py-3 text-[10px] font-black uppercase text-white outline-none cursor-pointer hover:border-primary-gold/50 transition-all">
+                                    <option value="processing" ${o.status === 'processing' ? 'selected' : ''}>Processing</option>
+                                    <option value="shipped" ${o.status === 'shipped' ? 'selected' : ''}>Shipped</option>
+                                    <option value="delivered" ${o.status === 'delivered' ? 'selected' : ''}>Delivered</option>
+                                    <option value="cancelled" ${o.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                                </select>
+                                <span class="text-3xl font-black text-primary-gold">$${o.total_amount}</span>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 pt-8 border-t border-white/5">
+                            <div class="space-y-4">
+                                <p class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Target Deployment</p>
+                                <p class="text-sm font-bold text-gray-300 leading-relaxed">${o.shipping_name}<br>${o.shipping_phone}<br>${o.shipping_address}</p>
+                            </div>
+                            <div class="space-y-4">
+                                <p class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Neural Assets</p>
+                                <div class="flex flex-wrap gap-3">
+                                    ${o.items.map(i => `<span class="px-4 py-2 bg-white/5 rounded-xl text-[10px] font-black uppercase text-white border border-white/5">${i.product_name} x${i.quantity}</span>`).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                lucide.createIcons();
+            } catch (err) { container.innerHTML = '<p class="text-center py-20 text-red-500 font-black uppercase text-[10px] tracking-widest">Protocol Failure: Data Link Interrupted</p>'; }
+        }
+
+        async function loadAdminDesigners() {
+            const container = document.getElementById('admin-designers-list');
+            container.innerHTML = '<div class="py-20 text-center"><div class="w-10 h-10 border-4 border-primary-gold border-t-transparent rounded-full animate-spin mx-auto mb-6"></div><p class="text-[10px] font-black uppercase tracking-widest text-gray-500">Scanning Architect Database...</p></div>';
+            try {
+                const res = await fetch(`${API_BASE}/admin/designers`);
+                const designers = await res.json();
+                container.innerHTML = designers.map(d => `
+                    <div class="glass p-10 rounded-[4rem] border border-white/5 space-y-6 group hover:border-primary-gold/20 transition-all relative overflow-hidden">
+                        <div class="absolute -top-12 -right-12 w-32 h-32 bg-primary-gold/5 rounded-full blur-[40px] group-hover:bg-primary-gold/10 transition-all"></div>
+                        <div class="flex items-center gap-8">
+                            <div class="w-24 h-24 rounded-[2rem] overflow-hidden border-2 border-white/5 shrink-0">
+                                <img src="${d.photo ? (d.photo.startsWith('http') ? d.photo : API_BASE.replace('/api', '') + d.photo) : 'https://ui-avatars.com/api/?name=' + d.username}" class="w-full h-full object-cover">
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-3xl font-black uppercase tracking-tighter text-white">${d.username}</h3>
+                                <p class="text-[11px] font-bold text-primary-gold uppercase tracking-widest mt-1">${d.subscription_tier} Architect</p>
+                                <p class="text-[10px] text-gray-500 mt-2">${d.email}</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 pt-6 border-t border-white/5">
+                            <div class="bg-white/5 p-4 rounded-2xl">
+                                <p class="text-[8px] font-black uppercase tracking-widest text-gray-500 mb-1">Daily Uploads</p>
+                                <p class="text-xl font-black text-white">${d.productsUploadedToday}</p>
+                            </div>
+                            <div class="bg-white/5 p-4 rounded-2xl">
+                                <p class="text-[8px] font-black uppercase tracking-widest text-gray-500 mb-1">Total Impact</p>
+                                <p class="text-xl font-black text-white">Active</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <button onclick="viewDesignerDetails('${d.email}')" class="flex-1 py-4 bg-white/5 hover:bg-primary-gold/10 hover:text-primary-gold border border-white/5 hover:border-primary-gold/30 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all">View Dossier</button>
+                            <button onclick="deleteUser(${d.id})" class="p-4 bg-red-500/10 text-red-500 border border-red-500/20 rounded-2xl hover:bg-red-500/20 transition-all">
+                                <i data-lucide="trash-2" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+                lucide.createIcons();
+            } catch (err) { container.innerHTML = '<p class="text-center py-20 text-red-500 font-black uppercase text-[10px] tracking-widest">Protocol Failure: Neural Link Severed</p>'; }
+        }
+
+        async function updateOrderStatus(id, status) {
+            await fetch(`${API_BASE}/admin/orders/${id}/status`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status })
+            });
+            loadAdminOrders();
+        }
+
+        async function loadAdminUsers() {
+            const container = document.getElementById('admin-users-list');
+            try {
+                const res = await fetch(`${API_BASE}/admin/users`);
+                const users = await res.json();
+                container.innerHTML = users.map(u => `
+                    <tr class="hover:bg-white/5 transition-all group">
+                        <td class="px-8 py-8">
+                            <div class="flex items-center gap-6">
+                                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-cyan/20 to-primary-magenta/20 flex items-center justify-center text-sm font-black text-white group-hover:scale-110 transition-transform">
+                                    ${u.username.charAt(0).toUpperCase()}
+                                </div>
+                                <div>
+                                    <p class="text-lg font-black uppercase tracking-tighter text-white">${u.username}</p>
+                                    <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">${u.email}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-8 py-8">
+                            <span class="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest ${u.role === 'admin' ? 'bg-primary-cyan/10 text-primary-cyan' : 'bg-white/5 text-gray-400'}">${u.role}</span>
+                        </td>
+                        <td class="px-8 py-8">
+                            <div class="flex items-center gap-3">
+                                <div class="w-2 h-2 rounded-full ${u.isVerified ? 'bg-green-500' : 'bg-red-500'} animate-pulse"></div>
+                                <span class="text-[10px] font-black uppercase tracking-widest ${u.isVerified ? 'text-green-500' : 'text-red-500'}">${u.isVerified ? 'Verified' : 'Unauthorized'}</span>
+                            </div>
+                        </td>
+                        <td class="px-8 py-8">
+                            <button onclick="deleteUser(${u.id})" class="p-4 bg-red-500/10 text-red-500 rounded-2xl hover:bg-red-500/20 transition-all">
+                                <i data-lucide="trash-2" class="w-5 h-5"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+                lucide.createIcons();
+            } catch (err) { }
+        }
+
+        async function deleteUser(id) {
+            if (!confirm('Execute deletion protocol for this user?')) return;
+            await fetch(`${API_BASE}/admin/users/${id}`, { method: 'DELETE' });
+            loadAdminUsers();
+            loadAdminOverview();
+        }
+
+        async function loadAdminFeedback() {
+            const container = document.getElementById('admin-feedback-list');
+            container.innerHTML = '<div class="py-20 text-center col-span-full"><div class="w-10 h-10 border-4 border-primary-magenta border-t-transparent rounded-full animate-spin mx-auto mb-6"></div><p class="text-[10px] font-black uppercase tracking-widest text-gray-500">Compiling Platform Sentiment...</p></div>';
+            try {
+                const res = await fetch(`${API_BASE}/admin/feedbacks`);
+                const feedbacks = await res.json();
+                container.innerHTML = feedbacks.map(f => `
+                    <div class="glass p-10 rounded-[4rem] border border-white/5 space-y-6 group hover:border-primary-magenta/20 transition-all relative overflow-hidden">
+                        <div class="absolute -top-12 -right-12 w-32 h-32 bg-primary-magenta/5 rounded-full blur-[40px] group-hover:bg-primary-magenta/10 transition-all"></div>
+                        <div class="flex justify-between items-start relative z-10">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-primary-magenta/10 border border-primary-magenta/20 flex items-center justify-center text-sm font-black text-primary-magenta">${(f.user_name || 'U').charAt(0)}</div>
+                                <div>
+                                    <h4 class="text-lg font-black uppercase tracking-tighter text-white">${f.user_name || 'Anonymous'}</h4>
+                                    <p class="text-[10px] font-bold text-gray-500">${f.user_email}</p>
+                                </div>
+                            </div>
+                            <div class="flex text-primary-gold gap-1">
+                                ${Array(5).fill(0).map((_, i) => `<i data-lucide="star" class="w-3.5 h-3.5 ${i < f.rating ? 'fill-primary-gold' : 'text-gray-800'}"></i>`).join('')}
+                            </div>
+                        </div>
+                        <div class="bg-black/40 p-6 rounded-3xl border border-white/5 italic text-sm text-gray-300 relative z-10">
+                            <p class="text-[9px] font-black text-primary-cyan uppercase tracking-widest mb-2">On: ${f.product_name || 'System'}</p>
+                            "${f.comment}"
+                        </div>
+                        <div class="flex justify-between items-center relative z-10">
+                            <p class="text-[10px] font-black text-gray-600 uppercase tracking-widest">${new Date(f.created_at).toLocaleDateString()}</p>
+                            <button onclick="deleteFeedback(${f.id})" class="px-6 py-2 bg-red-500/10 text-red-500 border border-red-500/20 rounded-xl font-black text-[9px] uppercase tracking-widest hover:bg-red-500/20 transition-all">Purge Entry</button>
+                        </div>
+                    </div>
+                `).join('');
+                lucide.createIcons();
+            } catch (err) { container.innerHTML = '<p class="text-center py-20 text-red-500 font-black uppercase text-[10px] tracking-widest">Protocol Failure: Sentiment Link Interrupted</p>'; }
+        }
+
+        async function deleteFeedback(id) {
+            await fetch(`${API_BASE}/admin/feedbacks/${id}`, { method: 'DELETE' });
+            loadAdminFeedback();
+        }
+
+        async function viewDesignerDetails(email) {
+            // Future enhancement: show a modal with designer products and history
+            console.log('Viewing dossier for:', email);
+            alert(`Accessing detailed dossier for Architect: ${email}`);
+        }
+
+        async function loadAdminFinance() {
+            const container = document.getElementById('admin-finance-list');
+            try {
+                const res = await fetch(`${API_BASE}/admin/finance`);
+                const data = await res.json();
+                document.getElementById('admin-finance-revenue').textContent = `$${parseFloat(data.stats.total_revenue || 0).toLocaleString()}`;
+                document.getElementById('admin-finance-count').textContent = data.stats.total_transactions || 0;
+                container.innerHTML = data.transactions.map(t => `
+                    <div class="glass p-8 rounded-[3rem] border border-white/5 flex justify-between items-center group hover:bg-white/5 transition-all">
+                        <div class="flex items-center gap-6">
+                            <div class="w-14 h-14 bg-primary-gold/10 rounded-2xl flex items-center justify-center text-primary-gold">
+                                <i data-lucide="zap" class="w-7 h-7"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-black uppercase tracking-tighter text-white">${t.user_email}</h4>
+                                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">${t.transaction_type.toUpperCase()} Protocol</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-3xl font-black text-white">+$${t.amount}</p>
+                            <p class="text-[10px] font-black text-gray-600 uppercase tracking-widest">${new Date(t.created_at).toLocaleDateString()}</p>
+                        </div>
+                    </div>
+                `).join('');
+                lucide.createIcons();
+            } catch (err) { }
+        }
+
+        function logout() {
+            document.cookie = "userId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            window.location.href = 'login.html';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            showAdminTab('overview');
+            if (window.lucide) lucide.createIcons();
+        });
+    </script>
+</body>
+</html>

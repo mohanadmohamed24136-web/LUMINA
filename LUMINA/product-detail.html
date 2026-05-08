@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber-Silk Evening Gown | LUMINA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: { colors: { primary: { cyan: "#00F0FF", magenta: "#FF00AA", gold: "#FFD700" }, dark: { bg: "#050505", card: "rgba(20, 20, 20, 0.7)", border: "rgba(255, 255, 255, 0.1)" } } } }
+        }
+    </script>
+</head>
+<body class="dark overflow-x-hidden">
+    <!-- Mesh Background -->
+    <div class="bg-mesh"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 glass border-b border-white/5 backdrop-blur-xl">
+        <div class="container mx-auto px-4 md:px-6 h-16 md:h-24 flex items-center justify-between gap-4 md:gap-8">
+            <a href="index.html" class="flex items-center gap-2 md:gap-3 shrink-0">
+                <div class="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-primary-cyan to-primary-magenta rounded-lg md:rounded-xl flex items-center justify-center">
+                    <i data-lucide="sparkles" class="w-4 h-4 md:w-6 md:h-6 text-white"></i>
+                </div>
+                <span class="text-lg md:text-2xl font-black bg-gradient-to-r from-primary-cyan via-primary-magenta to-primary-gold bg-clip-text text-transparent tracking-tighter uppercase block">LUMINA</span>
+            </a>
+
+            <div class="flex-1 max-w-xl relative group hidden lg:block">
+                <i data-lucide="search" class="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-primary-cyan transition-colors"></i>
+                <input type="text" id="main-search" placeholder="Search architectural designs..." 
+                    class="w-full bg-white/5 border border-white/10 rounded-2xl py-3 pl-14 pr-6 text-sm font-bold text-white outline-none focus:border-primary-cyan/30 focus:bg-white/10 transition-all">
+            </div>
+
+            <div class="flex items-center gap-1.5 md:gap-4 shrink-0">
+                <!-- Theme Toggle -->
+                <button onclick="toggleTheme()" class="w-9 h-9 md:w-12 md:h-12 flex items-center justify-center rounded-lg md:rounded-2xl bg-white/5 border border-white/10 text-gray-400 hover:text-primary-gold hover:border-primary-gold/30 transition-all group">
+                    <i data-lucide="sun" class="theme-icon w-3.5 h-3.5 md:w-5 md:h-5 group-hover:rotate-90 transition-transform"></i>
+                </button>
+
+                <a href="index.html" class="w-9 h-9 md:w-12 md:h-12 flex items-center justify-center rounded-lg md:rounded-2xl bg-white/5 border border-white/10 text-gray-400 hover:text-primary-cyan hover:border-primary-cyan/30 transition-all group">
+                    <i data-lucide="home" class="w-3.5 h-3.5 md:w-5 md:h-5 group-hover:scale-110 transition-transform"></i>
+                </a>
+
+                <a href="cart.html" class="relative w-9 h-9 md:w-12 md:h-12 flex items-center justify-center rounded-lg md:rounded-2xl bg-white/5 border border-white/10 text-gray-400 hover:text-primary-cyan hover:border-primary-cyan/30 transition-all group">
+                    <i data-lucide="shopping-bag" class="w-3.5 h-3.5 md:w-5 md:h-5 group-hover:scale-110 transition-transform"></i>
+                    <span id="cart-badge" class="absolute -top-1 -right-1 bg-primary-cyan text-black text-[8px] font-black w-3.5 h-3.5 flex items-center justify-center rounded-full border-2 border-dark-bg hidden">0</span>
+                </a>
+
+                <div id="nav-user-area">
+                    <a href="login.html" class="bg-primary-cyan text-black px-3 md:px-8 py-2 md:py-4 rounded-lg md:rounded-2xl font-black text-[8px] md:text-[10px] uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary-cyan/20">
+                        Join
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 md:px-6 pt-20 md:pt-40 pb-20 relative">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-16">
+            <!-- Gallery -->
+            <section class="space-y-4 md:space-y-6 animate-fade-in">
+                <div class="aspect-[4/5] rounded-3xl md:rounded-[4rem] overflow-hidden glass border border-white/5 group relative shadow-2xl">
+                    <img id="product-image" src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&q=80&w=1200" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110">
+                    
+                    <!-- Navigation Arrows -->
+                    <div id="gallery-nav" class="hidden absolute inset-0 flex items-center justify-between px-4 md:px-6 pointer-events-none">
+                        <button onclick="prevImage()" class="w-10 h-10 md:w-12 md:h-12 glass rounded-full flex items-center justify-center text-white pointer-events-auto hover:bg-primary-cyan hover:text-black transition-all">
+                            <i data-lucide="chevron-left" class="w-5 h-5 md:w-6 md:h-6"></i>
+                        </button>
+                        <button onclick="nextImage()" class="w-10 h-10 md:w-12 md:h-12 glass rounded-full flex items-center justify-center text-white pointer-events-auto hover:bg-primary-cyan hover:text-black transition-all">
+                            <i data-lucide="chevron-right" class="w-5 h-5 md:w-6 md:h-6"></i>
+                        </button>
+                    </div>
+
+                    <div class="absolute top-4 md:top-8 right-4 md:right-8 flex flex-col space-y-3 md:space-y-4">
+                        <button id="fav-btn" class="w-10 h-10 md:w-14 md:h-14 glass rounded-full flex items-center justify-center hover:bg-primary-magenta hover:text-white transition-all shadow-xl group/btn">
+                            <i data-lucide="heart" id="fav-icon" class="w-5 h-5 md:w-6 md:h-6 group-hover/btn:scale-110 transition-transform"></i>
+                        </button>
+                        <button class="w-10 h-10 md:w-14 md:h-14 glass rounded-full flex items-center justify-center hover:bg-primary-cyan hover:text-black transition-all shadow-xl group/btn">
+                            <i data-lucide="share-2" class="w-5 h-5 md:w-6 md:h-6 group-hover/btn:scale-110 transition-transform"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Floating Badge -->
+                    <div id="product-origin-badge" class="absolute bottom-4 md:bottom-8 left-4 md:left-8 glass px-4 md:px-6 py-2 md:py-3 rounded-xl md:rounded-2xl border-white/10 flex items-center space-x-2 md:space-x-3">
+                        <div class="w-1.5 h-1.5 md:w-2 md:h-2 bg-primary-cyan rounded-full animate-ping"></div>
+                        <span id="origin-text" class="text-[8px] md:text-[10px] font-black uppercase tracking-widest">Handcrafted in Paris</span>
+                    </div>
+
+                    <!-- Image Indicators -->
+                    <div id="image-indicators" class="absolute bottom-4 md:bottom-8 right-4 md:right-8 flex gap-1.5 md:gap-2"></div>
+                </div>
+                
+                <div id="gallery-thumbnails" class="grid grid-cols-5 gap-2 md:gap-4">
+                    <!-- Thumbnails will be injected here -->
+                </div>
+            </section>
+
+            <!-- Product Info -->
+            <section class="space-y-8 md:space-y-12 py-4 md:py-6 animate-fade-in" style="animation-delay: 0.2s">
+                <div class="space-y-4 md:space-y-6">
+                    <div class="flex items-center space-x-4">
+                        <span class="px-3 md:px-4 py-1 md:py-1.5 bg-primary-cyan/10 text-primary-cyan text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] rounded-full border border-primary-cyan/20">Lumina Elite</span>
+                        <div class="flex items-center space-x-1 text-primary-gold">
+                            <i data-lucide="star" class="fill-current w-3.5 h-3.5 md:w-4 md:h-4"></i>
+                            <span class="text-[10px] md:text-xs font-black">4.9 RANKING</span>
+                        </div>
+                    </div>
+                    <h1 id="product-name" class="text-3xl sm:text-4xl md:text-6xl font-black tracking-tighter leading-none uppercase">Loading...</h1>
+                    <p id="product-architect" class="text-base md:text-lg text-primary-cyan font-bold uppercase tracking-widest">Designer Name</p>
+                    <div class="flex items-baseline space-x-4">
+                        <p id="product-price" class="text-3xl md:text-4xl font-black tracking-tighter">$0.00</p>
+                    </div>
+                </div>
+
+                <!-- Architecture fit and selection -->
+                <div class="glass p-6 md:p-8 rounded-3xl md:rounded-[3rem] border border-white/10 space-y-6 md:space-y-8 relative overflow-hidden group">
+                    <div class="absolute -top-10 -right-10 w-40 h-40 bg-primary-cyan/5 rounded-full blur-3xl group-hover:bg-primary-cyan/10 transition-all"></div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                        <!-- Left Side: Sizes -->
+                        <div class="space-y-4 md:space-y-6">
+                            <div class="space-y-1 text-center md:text-left">
+                                <h3 class="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-gray-500" data-i18n="architecture">Architecture</h3>
+                                <p class="text-lg md:text-xl font-black tracking-tighter uppercase" data-i18n="select_fit">Select Your Fit</p>
+                            </div>
+                            <div id="product-sizes" class="grid grid-cols-5 gap-2 md:gap-3">
+                                <button onclick="selectSize('S')" class="size-btn group/size relative flex flex-col items-center justify-center p-3 md:p-4 rounded-xl md:rounded-2xl glass border border-white/10 hover:border-primary-cyan transition-all">
+                                    <span class="text-[10px] md:text-xs font-black mb-1">S</span>
+                                    <span id="size-s-value" class="text-[7px] md:text-[8px] font-bold text-gray-500 uppercase group-hover/size:text-primary-cyan transition-colors">-</span>
+                                </button>
+                                <button onclick="selectSize('M')" class="size-btn group/size relative flex flex-col items-center justify-center p-3 md:p-4 rounded-xl md:rounded-2xl glass border border-white/10 hover:border-primary-cyan transition-all">
+                                    <span class="text-[10px] md:text-xs font-black mb-1">M</span>
+                                    <span id="size-m-value" class="text-[7px] md:text-[8px] font-bold text-gray-500 uppercase group-hover/size:text-primary-cyan transition-colors">-</span>
+                                </button>
+                                <button onclick="selectSize('L')" class="size-btn group/size relative flex flex-col items-center justify-center p-3 md:p-4 rounded-xl md:rounded-2xl glass border border-white/10 hover:border-primary-cyan transition-all">
+                                    <span class="text-[10px] md:text-xs font-black mb-1">L</span>
+                                    <span id="size-l-value" class="text-[7px] md:text-[8px] font-bold text-gray-500 uppercase group-hover/size:text-primary-cyan transition-colors">-</span>
+                                </button>
+                                <button onclick="selectSize('XL')" class="size-btn group/size relative flex flex-col items-center justify-center p-3 md:p-4 rounded-xl md:rounded-2xl glass border border-white/10 hover:border-primary-cyan transition-all">
+                                    <span class="text-[10px] md:text-xs font-black mb-1">XL</span>
+                                    <span id="size-xl-value" class="text-[7px] md:text-[8px] font-bold text-gray-500 uppercase group-hover/size:text-primary-cyan transition-colors">-</span>
+                                </button>
+                                <button onclick="selectSize('XXL')" class="size-btn group/size relative flex flex-col items-center justify-center p-3 md:p-4 rounded-xl md:rounded-2xl glass border border-white/10 hover:border-primary-cyan transition-all">
+                                    <span class="text-[10px] md:text-xs font-black mb-1">XXL</span>
+                                    <span id="size-xxl-value" class="text-[7px] md:text-[8px] font-bold text-gray-500 uppercase group-hover/size:text-primary-cyan transition-colors">-</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Right Side: Colors & Quantity -->
+                        <div class="space-y-4 md:space-y-6">
+                            <!-- Color Selection -->
+                            <div id="color-selection-container" class="space-y-4 hidden">
+                                <div class="space-y-1 text-center md:text-left">
+                                    <h3 class="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-gray-500" data-i18n="palette">Neural Palette</h3>
+                                    <p class="text-lg md:text-xl font-black tracking-tighter uppercase" data-i18n="select_color">Select Color</p>
+                                </div>
+                                <div id="product-colors" class="flex flex-wrap justify-center md:justify-start gap-2 md:gap-3">
+                                    <!-- Colors will be injected here -->
+                                </div>
+                            </div>
+
+                            <!-- Quantity Selector -->
+                            <div class="space-y-4">
+                                <div class="space-y-1 text-center md:text-left">
+                                    <h3 class="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-gray-500" data-i18n="load">Asset Load</h3>
+                                    <p class="text-lg md:text-xl font-black tracking-tighter uppercase" data-i18n="quantity">Quantity</p>
+                                </div>
+                                <div class="flex items-center gap-2 glass rounded-xl border border-white/10 p-1.5 w-fit mx-auto md:mx-0">
+                                    <button onclick="updateQuantity(-1)" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 transition-all">
+                                        <i data-lucide="minus" class="w-3.5 h-3.5"></i>
+                                    </button>
+                                    <span id="quantity-display" class="w-10 text-center text-base font-black">1</span>
+                                    <button onclick="updateQuantity(1)" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 transition-all">
+                                        <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="product-description-container" class="hidden flex items-center space-x-3 md:space-x-4 bg-primary-cyan/5 p-4 md:p-5 rounded-xl md:rounded-2xl border border-primary-cyan/20">
+                        <div class="w-8 h-8 md:w-10 md:h-10 glass rounded-lg md:rounded-xl flex items-center justify-center text-primary-cyan shrink-0">
+                            <i data-lucide="info" class="w-4 h-4 md:w-5 md:h-5"></i>
+                        </div>
+                        <p id="product-description" class="text-[10px] md:text-[11px] font-bold text-primary-cyan/80 leading-relaxed">-</p>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+                    <button id="add-to-cart-btn" class="group relative overflow-hidden bg-primary-cyan text-black font-black py-4 md:py-6 rounded-2xl md:rounded-[2rem] flex items-center justify-center space-x-3 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-2xl">
+                        <div class="absolute inset-0 bg-gradient-to-r from-primary-magenta to-primary-cyan opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <i data-lucide="shopping-bag" class="w-5 h-5 md:w-6 md:h-6 relative z-10"></i>
+                        <span class="relative z-10 uppercase tracking-widest text-[10px] md:text-xs">Add to Cart</span>
+                    </button>
+                    <!-- WhatsApp Contact -->
+                    <a href="https://wa.me/201040777944" target="_blank" 
+                        class="glass border border-white/10 text-white font-black py-4 md:py-6 rounded-2xl md:rounded-[2rem] flex items-center justify-center space-x-3 hover:bg-[#25D366] hover:text-white transition-all group/wa">
+                        <i data-lucide="phone" class="w-5 h-5 md:w-6 md:h-6 group-hover/wa:animate-bounce"></i>
+                        <span class="uppercase tracking-widest text-[10px] md:text-xs">WhatsApp</span>
+                    </a>
+                </div>
+
+                <!-- Collaborative Actions -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 pt-4 md:pt-6">
+                    <a href="ai-studio.html" class="flex items-center justify-center space-x-3 md:space-x-4 p-4 md:p-6 glass rounded-2xl md:rounded-3xl border border-white/5 hover:border-primary-gold transition-all group">
+                        <i data-lucide="sparkles" class="w-5 h-5 md:w-6 md:h-6 text-primary-gold group-hover:scale-125 transition-transform"></i>
+                        <span class="text-[8px] md:text-[9px] font-black uppercase tracking-widest">AI Studio</span>
+                    </a>
+                    <div class="flex items-center justify-center space-x-3 md:space-x-4 p-4 md:p-6 glass rounded-2xl md:rounded-3xl border border-white/5 hover:border-primary-magenta transition-all group cursor-pointer">
+                        <i data-lucide="box" class="w-5 h-5 md:w-6 md:h-6 text-primary-magenta group-hover:scale-125 transition-transform"></i>
+                        <span class="text-[8px] md:text-[9px] font-black uppercase tracking-widest">AR Fitting</span>
+                    </div>
+                </div>
+
+                <!-- Feedbacks Section -->
+                <div class="pt-12 space-y-8">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-2xl font-black uppercase tracking-tighter">Designer Feedbacks</h3>
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="star" class="w-5 h-5 text-primary-gold fill-primary-gold"></i>
+                            <span id="avg-rating-text" class="text-lg font-black">5.0</span>
+                        </div>
+                    </div>
+
+                    <!-- Feedback Form (Visible if purchased - for now always visible for testing) -->
+                    <div id="feedback-form" class="glass p-8 rounded-[2.5rem] border border-white/5 space-y-6">
+                        <p class="text-[10px] font-black uppercase tracking-widest text-gray-500">Rate this Masterpiece</p>
+                        <div class="flex gap-3">
+                            <button onclick="setRating(1)" class="star-btn text-gray-600 hover:text-primary-gold transition-colors"><i data-lucide="star" class="w-8 h-8"></i></button>
+                            <button onclick="setRating(2)" class="star-btn text-gray-600 hover:text-primary-gold transition-colors"><i data-lucide="star" class="w-8 h-8"></i></button>
+                            <button onclick="setRating(3)" class="star-btn text-gray-600 hover:text-primary-gold transition-colors"><i data-lucide="star" class="w-8 h-8"></i></button>
+                            <button onclick="setRating(4)" class="star-btn text-gray-600 hover:text-primary-gold transition-colors"><i data-lucide="star" class="w-8 h-8"></i></button>
+                            <button onclick="setRating(5)" class="star-btn text-gray-600 hover:text-primary-gold transition-colors"><i data-lucide="star" class="w-8 h-8"></i></button>
+                        </div>
+                        <textarea id="feedback-comment" placeholder="Your thoughts on this design..." class="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-sm font-bold text-white outline-none focus:border-primary-cyan/30 transition-all resize-none h-24"></textarea>
+                        <button onclick="submitFeedback()" class="w-full bg-white text-black py-4 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-primary-cyan transition-all">Submit Protocol</button>
+                    </div>
+
+                    <!-- Feedbacks List -->
+                    <div id="feedbacks-list" class="space-y-4">
+                        <!-- Feedbacks will be injected here -->
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Premium Footer -->
+    <footer class="relative mt-24 overflow-hidden">
+        <!-- Background Accents -->
+        <div class="absolute inset-0 -z-10 bg-black/40 backdrop-blur-3xl border-t border-white/5"></div>
+        <div class="absolute -top-24 -left-24 w-96 h-96 bg-primary-cyan/5 rounded-full blur-[100px]"></div>
+        <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-primary-magenta/5 rounded-full blur-[100px]"></div>
+
+        <div class="container mx-auto px-6 py-20">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-20">
+                <!-- Brand Info -->
+                <div class="space-y-8 text-left">
+                    <a href="index.html" class="text-3xl font-black bg-gradient-to-r from-primary-cyan via-primary-magenta to-primary-gold bg-clip-text text-transparent tracking-tighter uppercase">LUMINA</a>
+                    <p class="text-gray-500 text-sm font-medium leading-relaxed">
+                        Redefining the architecture of fashion through neural networks and master craftsmanship. Join the elite community of designers and collectors.
+                    </p>
+                </div>
+
+                <!-- Explore -->
+                <div class="space-y-8 text-left">
+                    <h4 class="text-[10px] font-black uppercase tracking-[0.3em] text-white">Explore Ecosystem</h4>
+                    <ul class="space-y-4">
+                        <li><a href="ai-studio.html" class="text-sm font-bold text-gray-500 hover:text-primary-cyan transition-colors">AI Creative Studio</a></li>
+                        <li><a href="index.html#designer-products-grid" class="text-sm font-bold text-gray-500 hover:text-primary-cyan transition-colors">Elite Designers</a></li>
+                        <li><a href="designer-portal.html" class="text-sm font-bold text-gray-500 hover:text-primary-magenta transition-colors">Designer Portal</a></li>
+                        <li><a href="#" class="text-sm font-bold text-gray-500 hover:text-primary-cyan transition-colors">Trending Now</a></li>
+                    </ul>
+                </div>
+
+                <!-- Direct Collaboration -->
+                <div class="space-y-8 text-left">
+                    <h4 class="text-[10px] font-black uppercase tracking-[0.3em] text-white">Direct Collaboration</h4>
+                    <ul class="space-y-4">
+                        <li class="group">
+                            <a href="mailto:mohanad.mohamed.24136@gmail.com" class="flex items-center gap-3 text-[11px] font-bold text-gray-500 hover:text-primary-cyan transition-all">
+                                <div class="w-8 h-8 rounded-lg bg-white/5 border border-white/5 flex items-center justify-center group-hover:border-primary-cyan/30 transition-all">
+                                    <i data-lucide="mail" class="w-3.5 h-3.5 text-primary-cyan"></i>
+                                </div>
+                                <span class="truncate">mohanad.mohamed.24136@gmail.com</span>
+                            </a>
+                        </li>
+                        <li class="group">
+                            <a href="https://wa.me/201040777944" target="_blank" class="flex items-center gap-3 text-[11px] font-bold text-gray-500 hover:text-primary-magenta transition-all">
+                                <div class="w-8 h-8 rounded-lg bg-white/5 border border-white/5 flex items-center justify-center group-hover:border-primary-magenta/30 transition-all">
+                                    <i data-lucide="phone" class="w-3.5 h-3.5 text-primary-magenta"></i>
+                                </div>
+                                <span>+20 104 077 7944</span>
+                            </a>
+                        </li>
+                        <li class="group">
+                            <a href="#" class="flex items-center gap-3 text-[11px] font-bold text-gray-500 hover:text-primary-gold transition-all">
+                                <div class="w-8 h-8 rounded-lg bg-white/5 border border-white/5 flex items-center justify-center group-hover:border-primary-gold/30 transition-all">
+                                    <i data-lucide="package" class="w-3.5 h-3.5 text-primary-gold"></i>
+                                </div>
+                                <span>Logistics Protocol</span>
+                            </a>
+                        </li>
+                        <li class="group">
+                            <a href="#" class="flex items-center gap-3 text-[11px] font-bold text-gray-500 hover:text-white transition-all">
+                                <div class="w-8 h-8 rounded-lg bg-white/5 border border-white/5 flex items-center justify-center group-hover:border-white/20 transition-all">
+                                    <i data-lucide="ruler" class="w-3.5 h-3.5 text-gray-400"></i>
+                                </div>
+                                <span>Returns & Sizing</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Newsletter -->
+                <div class="space-y-8 text-left">
+                    <h4 class="text-[10px] font-black uppercase tracking-[0.3em] text-white">Neural Briefing</h4>
+                    <p class="text-gray-500 text-[10px] font-black uppercase tracking-widest leading-relaxed">Subscribe for exclusive collection drops.</p>
+                    <div class="relative group/mail">
+                        <input type="email" placeholder="NEURAL ADDRESS" 
+                            class="w-full bg-white/5 border border-white/5 rounded-2xl py-4 px-6 text-[10px] font-black uppercase tracking-widest placeholder:text-white/10 focus:bg-white/10 outline-none transition-all">
+                        <button class="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-white text-black rounded-xl flex items-center justify-center hover:bg-primary-cyan transition-colors">
+                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
+                <p class="text-gray-600 text-[10px] font-black uppercase tracking-[0.3em]">
+                    © 2026 LUMINA FUTURE OF FASHION ARCHITECTURE. ALL RIGHTS RESERVED.
+                </p>
+                <div class="flex space-x-10 text-[10px] font-black uppercase tracking-widest text-gray-600">
+                    <a href="#" class="hover:text-white transition-colors">Privacy Protocol</a>
+                    <a href="#" class="hover:text-white transition-colors">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/script.js"></script>
+    <script>
+        // Emergency icon initialization
+        if (window.lucide) {
+            lucide.createIcons();
+        }
+
+        let currentImageIndex = 0;
+        let productImages = [];
+        let selectedSize = null;
+        let selectedColor = null;
+        let currentQuantity = 1;
+        let currentRating = 5;
+
+        function updateQuantity(change) {
+            currentQuantity = Math.max(1, currentQuantity + change);
+            const display = document.getElementById('quantity-display');
+            if (display) display.textContent = currentQuantity;
+        }
+
+        function selectColor(color) {
+            selectedColor = color;
+            document.querySelectorAll('.color-btn').forEach(btn => {
+                btn.classList.remove('border-primary-cyan', 'bg-primary-cyan/10');
+                btn.classList.add('border-white/10');
+            });
+            const activeBtn = Array.from(document.querySelectorAll('.color-btn')).find(btn => 
+                btn.getAttribute('data-color') === color
+            );
+            if (activeBtn) {
+                activeBtn.classList.add('border-primary-cyan', 'bg-primary-cyan/10');
+                activeBtn.classList.remove('border-white/10');
+            }
+        }
+
+        function setRating(rating) {
+            currentRating = rating;
+            document.querySelectorAll('.star-btn').forEach((btn, i) => {
+                const icon = btn.querySelector('i');
+                if (i < rating) {
+                    icon.classList.add('fill-primary-gold', 'text-primary-gold');
+                    icon.classList.remove('text-gray-600');
+                } else {
+                    icon.classList.remove('fill-primary-gold', 'text-primary-gold');
+                    icon.classList.add('text-gray-600');
+                }
+            });
+        }
+
+        async function submitFeedback() {
+            if (!currentUser) {
+                showToast(currentLang === 'ar' ? 'يجب تسجيل الدخول أولاً' : 'Please login first', 'error');
+                return;
+            }
+
+            const comment = document.getElementById('feedback-comment').value;
+            const params = new URLSearchParams(window.location.search);
+            const productId = params.get('id');
+
+            try {
+                const response = await fetch(`${API_BASE}/feedbacks`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        product_id: productId,
+                        user_email: currentUser.email,
+                        user_name: currentUser.username || currentUser.name,
+                        rating: currentRating,
+                        comment: comment
+                    })
+                });
+
+                if (response.ok) {
+                    showToast(currentLang === 'ar' ? 'تم إرسال تقييمك بنجاح' : 'Feedback submitted successfully');
+                    document.getElementById('feedback-comment').value = '';
+                    loadFeedbacks(productId);
+                }
+            } catch (err) {
+                console.error('Submit Feedback Error:', err);
+            }
+        }
+
+        async function loadFeedbacks(productId) {
+            try {
+                const response = await fetch(`${API_BASE}/feedbacks/${productId}`);
+                const feedbacks = await response.json();
+                const container = document.getElementById('feedbacks-list');
+                
+                if (feedbacks.length === 0) {
+                    container.innerHTML = '<p class="text-center text-gray-500 text-[10px] font-black uppercase tracking-widest py-8">No feedbacks yet</p>';
+                    return;
+                }
+
+                container.innerHTML = feedbacks.map(f => `
+                    <div class="glass p-6 rounded-3xl border border-white/5 space-y-3">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-primary-cyan/10 flex items-center justify-center text-[10px] font-black text-primary-cyan">${f.user_name.charAt(0).toUpperCase()}</div>
+                                <span class="text-xs font-black text-white uppercase">${f.user_name}</span>
+                            </div>
+                            <div class="flex gap-0.5 text-primary-gold">
+                                ${Array(5).fill(0).map((_, i) => `<i data-lucide="star" class="w-3 h-3 ${i < f.rating ? 'fill-primary-gold' : 'text-gray-700'}"></i>`).join('')}
+                            </div>
+                        </div>
+                        <p class="text-[11px] font-bold text-gray-400 leading-relaxed">${f.comment || 'No comment provided'}</p>
+                    </div>
+                `).join('');
+                
+                const avg = feedbacks.reduce((a, b) => a + b.rating, 0) / feedbacks.length;
+                document.getElementById('avg-rating-text').textContent = avg.toFixed(1);
+
+                if (window.lucide) lucide.createIcons();
+            } catch (err) {
+                console.error('Load Feedbacks Error:', err);
+            }
+        }
+
+        function selectSize(size) {
+            selectedSize = size;
+            // Update UI
+            document.querySelectorAll('.size-btn').forEach(btn => {
+                btn.classList.remove('border-primary-cyan', 'bg-primary-cyan/10');
+                btn.classList.add('border-white/10');
+            });
+            
+            const activeBtn = Array.from(document.querySelectorAll('.size-btn')).find(btn => 
+                btn.querySelector('span').textContent === size
+            );
+            if (activeBtn) {
+                activeBtn.classList.add('border-primary-cyan', 'bg-primary-cyan/10');
+                activeBtn.classList.remove('border-white/10');
+            }
+        }
+
+        function updateGallery() {
+            const imgEl = document.getElementById('product-image');
+            const indicators = document.getElementById('image-indicators');
+            const thumbnails = document.getElementById('gallery-thumbnails');
+            
+            if (!imgEl || productImages.length === 0) return;
+
+            // Update Main Image
+            imgEl.src = productImages[currentImageIndex];
+            
+            // Update Indicators
+            if (indicators) {
+                indicators.innerHTML = productImages.map((_, i) => `
+                    <div class="w-2 h-2 rounded-full transition-all ${i === currentImageIndex ? 'bg-primary-cyan w-6' : 'bg-white/30'}"></div>
+                `).join('');
+            }
+
+            // Update Thumbnails
+            if (thumbnails) {
+                const thumbItems = thumbnails.querySelectorAll('div');
+                thumbItems.forEach((thumb, i) => {
+                    if (i === currentImageIndex) {
+                        thumb.classList.add('border-primary-cyan', 'opacity-100');
+                        thumb.classList.remove('border-white/5', 'opacity-60');
+                    } else {
+                        thumb.classList.remove('border-primary-cyan', 'opacity-100');
+                        thumb.classList.add('border-white/5', 'opacity-60');
+                    }
+                });
+            }
+        }
+
+        function nextImage() {
+            currentImageIndex = (currentImageIndex + 1) % productImages.length;
+            updateGallery();
+        }
+
+        function prevImage() {
+            currentImageIndex = (currentImageIndex - 1 + productImages.length) % productImages.length;
+            updateGallery();
+        }
+
+        function setGalleryImage(index) {
+            currentImageIndex = index;
+            updateGallery();
+        }
+
+        async function loadProductDetail() {
+            const params = new URLSearchParams(window.location.search);
+            const productId = params.get('id');
+
+            if (!productId) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/products`);
+                const products = await response.json();
+                const product = products.find(p => String(p.id) === String(productId));
+
+                if (product) {
+                    // Gallery Initialization
+                    const baseUrl = API_BASE.replace('/api', '');
+                    
+                    // Setup Images Array
+                    if (product.images) {
+                        try {
+                            const imgs = typeof product.images === 'string' ? JSON.parse(product.images) : product.images;
+                            productImages = imgs.map(img => img.startsWith('http') ? img : baseUrl + img);
+                        } catch (e) {
+                            productImages = [product.img.startsWith('http') ? product.img : baseUrl + product.img];
+                        }
+                    } else {
+                        productImages = [product.img.startsWith('http') ? product.img : baseUrl + product.img];
+                    }
+
+                    // Show Nav if multiple images
+                    if (productImages.length > 1) {
+                        document.getElementById('gallery-nav')?.classList.remove('hidden');
+                        
+                        // Render Thumbnails
+                        const thumbContainer = document.getElementById('gallery-thumbnails');
+                        if (thumbContainer) {
+                            thumbContainer.innerHTML = productImages.map((img, i) => `
+                                <div onclick="setGalleryImage(${i})" class="aspect-square rounded-2xl overflow-hidden glass border transition-all cursor-pointer ${i === 0 ? 'border-primary-cyan opacity-100' : 'border-white/5 opacity-60'} hover:opacity-100">
+                                    <img src="${img}" class="w-full h-full object-cover">
+                                </div>
+                            `).join('');
+                        }
+                    }
+
+                    updateGallery();
+                    
+                    // NEW: Load Text Info (moved after gallery update)
+                    document.getElementById('product-name').textContent = product.name;
+                    document.getElementById('product-price').textContent = `$${parseFloat(product.price).toFixed(2)}`;
+                    document.getElementById('product-architect').textContent = product.architect;
+
+                    // Check if AI product
+                    if (product.isAI) {
+                        const originText = document.getElementById('origin-text');
+                        if (originText) originText.textContent = 'Neural Synthetic Pattern';
+                        const badge = document.getElementById('product-origin-badge');
+                        if (badge) badge.classList.add('border-primary-cyan/30', 'bg-primary-cyan/5');
+                        
+                        // Update ranking badge text
+                        const rankLabel = document.querySelector('span.bg-primary-cyan\\/10');
+                        if (rankLabel) {
+                            rankLabel.textContent = 'AI Masterpiece';
+                            rankLabel.classList.add('bg-primary-magenta/10', 'text-primary-magenta', 'border-primary-magenta/20');
+                            rankLabel.classList.remove('bg-primary-cyan/10', 'text-primary-cyan', 'border-primary-cyan/20');
+                        }
+                    }
+
+                    document.getElementById('add-to-cart-btn').onclick = () => {
+                        if (!selectedSize) {
+                            showToast(currentLang === 'ar' ? 'يرجى اختيار المقاس أولاً' : 'Please select a size first', 'error');
+                            return;
+                        }
+                        const colorsStr = product.colors || '';
+                        if (colorsStr.trim() && !selectedColor) {
+                            showToast(currentLang === 'ar' ? 'يرجى اختيار اللون أولاً' : 'Please select a color first', 'error');
+                            return;
+                        }
+                        addToCart(product.id, product.name, product.price, product.img, product.architect, currentQuantity, selectedSize, selectedColor);
+                    };
+                    document.getElementById('fav-btn').onclick = () => {
+                        toggleFavorite(product.id);
+                        setTimeout(updateFavUI, 500); // Small delay to sync with API
+                    };
+
+                    // Function to update fav UI
+                    const updateFavUI = () => {
+                        const icon = document.getElementById('fav-icon');
+                        if (!icon) return;
+                        if (currentFavorites && currentFavorites.includes(String(product.id))) {
+                            icon.classList.add('fill-primary-magenta', 'text-primary-magenta');
+                        } else {
+                            icon.classList.remove('fill-primary-magenta', 'text-primary-magenta');
+                        }
+                    };
+
+                    // Initial fav check
+                    setTimeout(updateFavUI, 300);
+
+                    document.title = `${product.name} | LUMINA`;
+
+                    // Load colors
+                    const colorContainer = document.getElementById('product-colors');
+                    const colorSection = document.getElementById('color-selection-container');
+                    if (product.colors && colorContainer) {
+                        const colors = product.colors.split(',').map(c => c.trim()).filter(c => c);
+                        if (colors.length > 0) {
+                            colorSection.classList.remove('hidden');
+                            colorContainer.innerHTML = colors.map(c => `
+                                <button onclick="selectColor('${c}')" data-color="${c}" class="color-btn px-4 py-2 rounded-xl glass border border-white/10 text-[9px] font-black uppercase tracking-widest hover:border-primary-cyan transition-all">
+                                    ${c}
+                                </button>
+                            `).join('');
+                        }
+                    }
+
+                    // Load sizes
+                    if (product.size_s) document.getElementById('size-s-value').textContent = product.size_s + 'cm';
+                    if (product.size_m) document.getElementById('size-m-value').textContent = product.size_m + 'cm';
+                    if (product.size_l) document.getElementById('size-l-value').textContent = product.size_l + 'cm';
+                    if (product.size_xl) document.getElementById('size-xl-value').textContent = product.size_xl + 'cm';
+                    if (product.size_xxl) document.getElementById('size-xxl-value').textContent = product.size_xxl + 'cm';
+
+                    // Load description
+                    if (product.description) {
+                        document.getElementById('product-description').textContent = product.description;
+                        document.getElementById('product-description-container').classList.remove('hidden');
+                        document.getElementById('product-description-container').classList.add('flex');
+                    }
+
+                    // NEW: Load Feedbacks
+                    loadFeedbacks(productId);
+                }
+            } catch (err) {
+                console.error('Error loading product:', err);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProductDetail();
+        });
+    </script>
+</body>
+</html>

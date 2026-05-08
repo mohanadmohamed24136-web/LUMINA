@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart | LUMINA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            cyan: "#00F0FF",
+                            magenta: "#FF00AA",
+                            gold: "#FFD700",
+                        },
+                        dark: {
+                            bg: "#050505",
+                            card: "rgba(20, 20, 20, 0.7)",
+                            border: "rgba(255, 255, 255, 0.1)",
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="dark overflow-x-hidden">
+    <div class="bg-mesh"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 glass border-b border-white/5 backdrop-blur-xl">
+        <div class="container mx-auto px-4 md:px-6 h-16 md:h-24 flex items-center justify-between gap-4 md:gap-8">
+            <a href="index.html" class="flex items-center gap-2 md:gap-3 shrink-0">
+                <div class="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-primary-cyan to-primary-magenta rounded-lg md:rounded-xl flex items-center justify-center">
+                    <i data-lucide="sparkles" class="w-4 h-4 md:w-6 md:h-6 text-white"></i>
+                </div>
+                <span class="text-lg md:text-2xl font-black bg-gradient-to-r from-primary-cyan via-primary-magenta to-primary-gold bg-clip-text text-transparent tracking-tighter uppercase block">LUMINA</span>
+            </a>
+
+            <div class="flex-1 max-w-xl relative group hidden lg:block">
+                <i data-lucide="search" class="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-primary-cyan transition-colors"></i>
+                <input type="text" id="main-search" placeholder="Search architectural designs..." 
+                    class="w-full bg-white/5 border border-white/10 rounded-2xl py-3 pl-14 pr-6 text-sm font-bold text-white outline-none focus:border-primary-cyan/30 focus:bg-white/10 transition-all">
+            </div>
+
+            <!-- Actions (Right) -->
+            <div class="flex items-center gap-1.5 md:gap-4 shrink-0">
+                <!-- Theme Toggle -->
+                <button onclick="toggleTheme()" class="w-9 h-9 md:w-12 md:h-12 flex items-center justify-center rounded-lg md:rounded-2xl bg-white/5 border border-white/10 text-gray-400 hover:text-primary-gold hover:border-primary-gold/30 transition-all group">
+                    <i data-lucide="sun" class="theme-icon w-3.5 h-3.5 md:w-5 md:h-5 group-hover:rotate-90 transition-transform"></i>
+                </button>
+
+                <a href="index.html" class="w-9 h-9 md:w-12 md:h-12 flex items-center justify-center rounded-lg md:rounded-2xl bg-white/5 border border-white/10 text-gray-400 hover:text-primary-cyan hover:border-primary-cyan/30 transition-all group">
+                    <i data-lucide="home" class="w-3.5 h-3.5 md:w-5 md:h-5 group-hover:scale-110 transition-transform"></i>
+                </a>
+
+                <a href="cart.html" class="relative w-9 h-9 md:w-12 md:h-12 flex items-center justify-center rounded-lg md:rounded-2xl bg-primary-cyan/10 border border-primary-cyan/30 text-primary-cyan transition-all group">
+                    <i data-lucide="shopping-bag" class="w-3.5 h-3.5 md:w-5 md:h-5 group-hover:scale-110 transition-transform"></i>
+                    <span id="cart-badge" class="absolute -top-1 -right-1 bg-primary-cyan text-black text-[8px] font-black w-3.5 h-3.5 flex items-center justify-center rounded-full border-2 border-dark-bg">0</span>
+                </a>
+
+                <div id="nav-user-area">
+                    <a href="login.html" class="bg-primary-cyan text-black px-3 md:px-8 py-2 md:py-4 rounded-lg md:rounded-2xl font-black text-[8px] md:text-[10px] uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary-cyan/20">
+                        Join
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Cart Content -->
+    <main class="container mx-auto px-4 md:px-6 pt-20 md:pt-40 pb-20">
+        <!-- Cart Header -->
+        <div class="flex flex-col md:flex-row items-center justify-between gap-6 mb-8 md:mb-12">
+            <div class="flex items-center gap-4 text-center md:text-left">
+                <div class="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-primary-cyan to-primary-magenta rounded-xl md:rounded-2xl flex items-center justify-center shrink-0">
+                    <i data-lucide="shopping-bag" class="w-6 h-6 md:w-8 md:h-8 text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl md:text-4xl font-black tracking-tighter uppercase">Your Cart</h1>
+                    <p class="text-gray-500 text-[8px] md:text-xs font-bold uppercase tracking-widest"><span id="cart-count">0</span> items in your collection</p>
+                </div>
+            </div>
+            <a href="index.html#designer-products-grid" class="w-full md:w-auto glass px-6 py-3 md:py-4 rounded-xl md:rounded-2xl border-white/10 text-[9px] md:text-xs font-black uppercase tracking-widest hover:bg-white/10 transition-all flex items-center justify-center gap-3">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                Continue Shopping
+            </a>
+        </div>
+
+        <!-- Cart Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12">
+            <!-- Cart Items -->
+            <div class="lg:col-span-2 space-y-6" id="cart-items-container">
+                <!-- Empty Cart State -->
+                <div id="empty-cart" class="hidden glass p-8 md:p-16 rounded-3xl md:rounded-[3rem] border-white/5 text-center space-y-6">
+                    <div class="w-20 h-20 md:w-24 md:h-24 bg-white/5 rounded-full flex items-center justify-center mx-auto">
+                        <i data-lucide="shopping-bag" class="w-10 h-10 md:w-12 md:h-12 text-gray-600"></i>
+                    </div>
+                    <div class="space-y-2">
+                        <h3 class="text-xl md:text-2xl font-black uppercase tracking-tighter">Your Cart is Empty</h3>
+                        <p class="text-gray-500 text-[9px] md:text-xs font-bold uppercase tracking-widest">Discover our elite collection of fashion masterpieces</p>
+                    </div>
+                    <a href="index.html#designer-products-grid" class="inline-flex items-center gap-3 bg-primary-cyan text-black px-6 py-3 md:px-8 md:py-4 rounded-xl md:rounded-2xl font-black text-[9px] md:text-xs uppercase tracking-widest hover:scale-105 transition-all">
+                        <i data-lucide="wand-2" class="w-4 h-4"></i>
+                        Browse Collection
+                    </a>
+                </div>
+
+                <!-- Cart Items List -->
+                <div id="cart-items-list" class="space-y-4">
+                    <!-- Items will be rendered here -->
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="space-y-6" id="order-summary">
+                <div class="glass p-6 md:p-8 rounded-3xl md:rounded-[3rem] border-white/5 sticky top-20 md:top-40 space-y-6 md:space-y-8">
+                    <div class="space-y-2">
+                        <h3 class="text-lg md:text-xl font-black uppercase tracking-tighter">Order Summary</h3>
+                        <p class="text-gray-500 text-[9px] md:text-[10px] font-bold uppercase tracking-widest">Complete your purchase</p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="flex justify-between text-xs md:text-sm">
+                            <span class="text-gray-400 font-bold uppercase tracking-widest">Subtotal</span>
+                            <span class="text-white font-black" id="summary-subtotal">$0</span>
+                        </div>
+                        <div class="flex justify-between text-xs md:text-sm">
+                            <span class="text-gray-400 font-bold uppercase tracking-widest">Shipping</span>
+                            <span class="text-white font-black" id="summary-shipping">$20</span>
+                        </div>
+                        <div class="flex justify-between text-xs md:text-sm">
+                            <span class="text-gray-400 font-bold uppercase tracking-widest">Tax (10%)</span>
+                            <span class="text-white font-black" id="summary-tax">$0</span>
+                        </div>
+                        <div class="border-t border-white/10 pt-4 flex justify-between">
+                            <span class="text-primary-cyan font-black uppercase tracking-widest">Total</span>
+                            <span class="text-xl md:text-2xl font-black text-white" id="summary-total">$0</span>
+                        </div>
+                    </div>
+
+                    <button onclick="checkout()" id="checkout-btn" class="w-full bg-gradient-to-r from-primary-cyan to-primary-magenta text-black py-4 md:py-5 rounded-xl md:rounded-2xl font-black text-[9px] md:text-xs uppercase tracking-widest hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(0,240,255,0.4)] transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100" disabled>
+                        <i data-lucide="credit-card" class="w-4 h-4 md:w-5 md:h-5"></i>
+                        Proceed to Checkout
+                    </button>
+
+                    <div class="flex items-center justify-center gap-4 text-[8px] md:text-[10px] font-black uppercase tracking-widest text-gray-500">
+                        <div class="flex items-center gap-1.5 md:gap-2">
+                            <i data-lucide="shield-check" class="w-3 h-3 md:w-4 md:h-4 text-primary-cyan"></i>
+                            Secure
+                        </div>
+                        <div class="flex items-center gap-1.5 md:gap-2">
+                            <i data-lucide="truck" class="w-3 h-3 md:w-4 md:h-4 text-primary-cyan"></i>
+                            Fast Delivery
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Track Order Button -->
+                <button onclick="openOrderTracking()" class="w-full glass p-4 md:p-6 rounded-2xl md:rounded-[2rem] border-white/5 hover:border-primary-cyan/30 transition-all flex items-center justify-between group">
+                    <div class="flex items-center gap-3 md:gap-4">
+                        <div class="w-10 h-10 md:w-12 md:h-12 bg-primary-cyan/10 rounded-lg md:rounded-xl flex items-center justify-center shrink-0">
+                            <i data-lucide="package" class="w-5 h-5 md:w-6 md:h-6 text-primary-cyan"></i>
+                        </div>
+                        <div class="text-left">
+                            <h4 class="text-xs md:text-sm font-black uppercase tracking-tighter">Track Your Order</h4>
+                            <p class="text-[8px] md:text-[10px] text-gray-500 font-bold uppercase tracking-widest">View order history</p>
+                        </div>
+                    </div>
+                    <i data-lucide="chevron-right" class="w-4 h-4 md:w-5 md:h-5 text-gray-500 group-hover:text-primary-cyan group-hover:translate-x-1 transition-all"></i>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Secure Order Payment Modal -->
+    <div id="order-payment-modal" class="fixed inset-0 z-[110] hidden p-4 flex items-center justify-center">
+        <div class="absolute inset-0 bg-dark-bg/95 backdrop-blur-xl" onclick="closeOrderPaymentModal()"></div>
+        <div class="w-full max-w-md glass rounded-3xl md:rounded-[3.5rem] border border-white/10 relative overflow-hidden animate-scale-in">
+            <div class="p-6 md:p-10 pt-12 md:pt-16 space-y-6 md:space-y-8">
+                <div class="text-center space-y-4">
+                    <div class="absolute -top-8 left-1/2 -translate-x-1/2 w-16 h-16 md:w-20 md:h-20 bg-primary-cyan text-black rounded-2xl md:rounded-3xl flex items-center justify-center shadow-[0_0_50px_rgba(0,240,255,0.3)] border-4 border-dark-bg z-10">
+                        <i data-lucide="shield-check" class="w-8 h-8 md:w-10 md:h-10"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl md:text-3xl font-black uppercase tracking-tighter text-white mt-2">Neural Checkout</h3>
+                        <p class="text-[8px] md:text-[10px] font-black text-gray-500 uppercase tracking-widest">Transaction Encryption Active</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4 md:space-y-6">
+                    <div class="space-y-1.5 md:space-y-2">
+                        <label class="text-[8px] font-black uppercase tracking-widest text-gray-500 ml-3 md:ml-4">Cardholder Name</label>
+                        <input type="text" id="order-card-name" class="w-full bg-white/5 border border-white/5 rounded-xl py-3.5 md:py-4 px-5 md:px-6 text-xs md:text-sm font-bold text-white outline-none focus:border-primary-cyan/30 transition-all" placeholder="Neural Architect Name">
+                    </div>
+                    <div class="space-y-1.5 md:space-y-2">
+                        <label class="text-[8px] font-black uppercase tracking-widest text-gray-500 ml-3 md:ml-4">Card Identifier</label>
+                        <input type="text" id="order-card-number" maxlength="19" class="w-full bg-white/5 border border-white/5 rounded-xl py-3.5 md:py-4 px-5 md:px-6 text-xs md:text-sm font-bold text-white outline-none focus:border-primary-cyan/30 transition-all" placeholder="0000 0000 0000 0000">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 md:gap-6">
+                        <div class="space-y-1.5 md:space-y-2">
+                            <label class="text-[8px] font-black uppercase tracking-widest text-gray-500 ml-3 md:ml-4">Expiration</label>
+                            <input type="text" id="order-card-expiry" maxlength="5" class="w-full bg-white/5 border border-white/5 rounded-xl py-3.5 md:py-4 px-5 md:px-6 text-xs md:text-sm font-bold text-white outline-none focus:border-primary-cyan/30 transition-all" placeholder="MM/YY">
+                        </div>
+                        <div class="space-y-1.5 md:space-y-2">
+                            <label class="text-[8px] font-black uppercase tracking-widest text-gray-500 ml-3 md:ml-4">Security Code</label>
+                            <input type="password" id="order-card-cvv" maxlength="3" class="w-full bg-white/5 border border-white/5 rounded-xl py-3.5 md:py-4 px-5 md:px-6 text-xs md:text-sm font-bold text-white outline-none focus:border-primary-cyan/30 transition-all" placeholder="***">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-2 md:pt-4">
+                    <div class="flex justify-between items-center mb-4 md:mb-6">
+                        <span class="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-gray-500">Total Manifest</span>
+                        <span class="text-lg md:text-xl font-black text-white" id="modal-total-amount">$0.00</span>
+                    </div>
+                    <button onclick="processOrderSecurePayment()" id="confirm-order-payment-btn" class="w-full py-4 md:py-5 bg-white text-black rounded-xl md:rounded-2xl font-black text-[10px] md:text-xs uppercase tracking-[0.2em] hover:bg-primary-cyan transition-all shadow-xl shadow-white/5 flex items-center justify-center gap-3">
+                        <i data-lucide="lock" class="w-4 h-4"></i>
+                        <span>Authorize Transaction</span>
+                    </button>
+                    <p class="text-[6px] md:text-[7px] text-center text-gray-600 font-black uppercase tracking-[0.3em] mt-4 md:mt-6">
+                        Neural Encryption by LUMINA Cyber-Security
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Tracking Modal -->
+    <div id="order-tracking-modal" class="fixed inset-0 z-[100] hidden">
+        <div class="absolute inset-0 bg-dark-bg/90 backdrop-blur-md" onclick="closeOrderTracking()"></div>
+        <div class="absolute inset-4 md:inset-10 lg:inset-20 bg-dark-bg rounded-[3rem] border border-white/10 overflow-hidden animate-fade-in">
+            <div class="h-full flex flex-col">
+                <!-- Modal Header -->
+                <div class="p-8 border-b border-white/5 flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-gradient-to-br from-primary-cyan to-primary-magenta rounded-xl flex items-center justify-center">
+                            <i data-lucide="package" class="w-6 h-6 text-white"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-black uppercase tracking-tighter">Order Tracking</h2>
+                            <p class="text-gray-500 text-xs font-bold uppercase tracking-widest">Track your orders in real-time</p>
+                        </div>
+                    </div>
+                    <button onclick="closeOrderTracking()" class="w-12 h-12 glass rounded-full flex items-center justify-center hover:bg-white/10 transition-all">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
+
+                <!-- Modal Content -->
+                <div class="flex-1 overflow-y-auto p-8">
+                    <!-- No Orders State -->
+                    <div id="no-orders" class="hidden h-full flex flex-col items-center justify-center text-center space-y-6 py-20">
+                        <div class="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center">
+                            <i data-lucide="package-x" class="w-12 h-12 text-gray-600"></i>
+                        </div>
+                        <div class="space-y-2">
+                            <h3 class="text-2xl font-black uppercase tracking-tighter">No Orders Yet</h3>
+                            <p class="text-gray-500 text-xs font-bold uppercase tracking-widest">Your order history will appear here</p>
+                        </div>
+                        <a href="index.html#designer-products-grid" onclick="closeOrderTracking()" class="inline-flex items-center gap-3 bg-primary-cyan text-black px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 transition-all">
+                            Start Shopping
+                        </a>
+                    </div>
+
+                    <!-- Orders List -->
+                    <div id="orders-list" class="space-y-6">
+                        <!-- Orders will be rendered here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div id="checkout-modal" class="fixed inset-0 z-[100] hidden">
+        <div class="absolute inset-0 bg-dark-bg/90 backdrop-blur-md" onclick="closeCheckout()"></div>
+        <div class="absolute inset-4 md:inset-10 lg:inset-y-20 lg:inset-x-40 bg-dark-bg rounded-[3rem] border border-white/10 overflow-hidden animate-fade-in">
+            <div class="h-full flex flex-col">
+                <!-- Modal Header -->
+                <div class="p-8 border-b border-white/5 flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-gradient-to-br from-primary-cyan to-primary-magenta rounded-xl flex items-center justify-center">
+                            <i data-lucide="credit-card" class="w-6 h-6 text-white"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-black uppercase tracking-tighter">Checkout</h2>
+                            <p class="text-gray-500 text-xs font-bold uppercase tracking-widest">Complete your order</p>
+                        </div>
+                    </div>
+                    <button onclick="closeCheckout()" class="w-12 h-12 glass rounded-full flex items-center justify-center hover:bg-white/10 transition-all">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
+
+                <!-- Checkout Content -->
+                <div class="flex-1 overflow-y-auto p-8">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                        <!-- Shipping Form -->
+                        <div class="space-y-6">
+                            <h3 class="text-lg font-black uppercase tracking-tighter">Shipping Information</h3>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2">Full Name</label>
+                                    <input type="text" id="checkout-name" class="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-6 text-sm font-bold text-white outline-none focus:border-primary-cyan/30 transition-all" placeholder="Enter your full name">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2">Email</label>
+                                    <input type="email" id="checkout-email" class="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-6 text-sm font-bold text-white outline-none focus:border-primary-cyan/30 transition-all" placeholder="your@email.com">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2">Phone</label>
+                                    <input type="tel" id="checkout-phone" class="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-6 text-sm font-bold text-white outline-none focus:border-primary-cyan/30 transition-all" placeholder="+1 234 567 8900">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2">Address</label>
+                                    <textarea id="checkout-address" rows="3" class="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-6 text-sm font-bold text-white outline-none focus:border-primary-cyan/30 transition-all resize-none" placeholder="Enter your full address"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Order Review -->
+                        <div class="space-y-6">
+                            <h3 class="text-lg font-black uppercase tracking-tighter">Order Review</h3>
+                            
+                            <div id="checkout-items" class="space-y-4 max-h-80 overflow-y-auto">
+                                <!-- Items will be rendered here -->
+                            </div>
+
+                            <div class="border-t border-white/10 pt-4 space-y-3">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-400 font-bold uppercase tracking-widest">Subtotal</span>
+                                    <span class="text-white font-black" id="checkout-subtotal">$0</span>
+                                </div>
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-400 font-bold uppercase tracking-widest">Shipping</span>
+                                    <span class="text-white font-black">$20</span>
+                                </div>
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-400 font-bold uppercase tracking-widest">Tax (10%)</span>
+                                    <span class="text-white font-black" id="checkout-tax">$0</span>
+                                </div>
+                                <div class="border-t border-white/10 pt-4 flex justify-between">
+                                    <span class="text-primary-cyan font-black uppercase tracking-widest">Total</span>
+                                    <span class="text-2xl font-black text-white" id="checkout-total">$0</span>
+                                </div>
+                            </div>
+
+                            <button onclick="placeOrder()" id="place-order-btn" class="w-full bg-gradient-to-r from-primary-cyan to-primary-magenta text-black py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(0,240,255,0.4)] transition-all flex items-center justify-center gap-3">
+                                <i data-lucide="check-circle" class="w-5 h-5"></i>
+                                Place Order
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Success Modal -->
+    <div id="order-success-modal" class="fixed inset-0 z-[100] hidden">
+        <div class="absolute inset-0 bg-dark-bg/90 backdrop-blur-md"></div>
+        <div class="absolute inset-0 flex items-center justify-center p-4">
+            <div class="glass p-12 rounded-[3rem] border-white/10 text-center space-y-8 animate-fade-in max-w-lg mx-auto">
+                <div class="w-24 h-24 bg-gradient-to-br from-primary-cyan to-primary-magenta rounded-full flex items-center justify-center mx-auto">
+                    <i data-lucide="check" class="w-12 h-12 text-white"></i>
+                </div>
+                <div class="space-y-2">
+                    <h2 class="text-3xl font-black uppercase tracking-tighter">Order Placed!</h2>
+                    <p class="text-gray-500 text-xs font-bold uppercase tracking-widest">Your order has been successfully placed</p>
+                </div>
+                <div class="space-y-2">
+                    <p class="text-gray-400 text-sm font-bold uppercase tracking-widest">Order ID</p>
+                    <p class="text-primary-cyan text-2xl font-black" id="new-order-id">#LUM-000000</p>
+                </div>
+                <div class="pt-4">
+                    <p class="text-gray-500 text-[10px] font-bold uppercase tracking-widest mb-4">You can track your order in the tracking page</p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <button onclick="openOrderTracking(); closeOrderSuccess();" class="bg-primary-cyan text-black px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 transition-all">
+                            Track Order
+                        </button>
+                        <a href="index.html" class="glass px-8 py-4 rounded-2xl border-white/10 text-xs font-black uppercase tracking-widest hover:bg-white/10 transition-all">
+                            Continue Shopping
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Premium Footer -->
+    <footer class="relative mt-24 overflow-hidden">
+        <!-- Background Accents -->
+        <div class="absolute inset-0 -z-10 bg-black/40 backdrop-blur-3xl border-t border-white/5"></div>
+        <div class="absolute -top-24 -left-24 w-96 h-96 bg-primary-cyan/5 rounded-full blur-[100px]"></div>
+        <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-primary-magenta/5 rounded-full blur-[100px]"></div>
+
+        <div class="container mx-auto px-6 py-20">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-20">
+                <!-- Brand Info -->
+                <div class="space-y-8 text-left">
+                    <a href="index.html" class="text-3xl font-black bg-gradient-to-r from-primary-cyan via-primary-magenta to-primary-gold bg-clip-text text-transparent tracking-tighter uppercase">LUMINA</a>
+                    <p class="text-gray-500 text-sm font-medium leading-relaxed">
+                        Redefining the architecture of fashion through neural networks and master craftsmanship. Join the elite community of designers and collectors.
+                    </p>
+                </div>
+
+                <!-- Explore -->
+                <div class="space-y-8 text-left">
+                    <h4 class="text-[10px] font-black uppercase tracking-[0.3em] text-white">Explore Ecosystem</h4>
+                    <ul class="space-y-4">
+                        <li><a href="ai-studio.html" class="text-sm font-bold text-gray-500 hover:text-primary-cyan transition-colors">AI Creative Studio</a></li>
+                        <li><a href="index.html#designer-products-grid" class="text-sm font-bold text-gray-500 hover:text-primary-cyan transition-colors">Elite Designers</a></li>
+                        <li><a href="designer-portal.html" class="text-sm font-bold text-gray-500 hover:text-primary-magenta transition-colors">Designer Portal</a></li>
+                        <li><a href="#" class="text-sm font-bold text-gray-500 hover:text-primary-cyan transition-colors">Trending Now</a></li>
+                    </ul>
+                </div>
+
+                <!-- Direct Collaboration -->
+                <div class="space-y-8 text-left">
+                    <h4 class="text-[10px] font-black uppercase tracking-[0.3em] text-white">Direct Collaboration</h4>
+                    <ul class="space-y-4">
+                        <li class="group">
+                            <a href="mailto:mohanad.mohamed.24136@gmail.com" class="flex items-center gap-3 text-[11px] font-bold text-gray-500 hover:text-primary-cyan transition-all">
+                                <div class="w-8 h-8 rounded-lg bg-white/5 border border-white/5 flex items-center justify-center group-hover:border-primary-cyan/30 transition-all">
+                                    <i data-lucide="mail" class="w-3.5 h-3.5 text-primary-cyan"></i>
+                                </div>
+                                <span class="truncate">mohanad.mohamed.24136@gmail.com</span>
+                            </a>
+                        </li>
+                        <li class="group">
+                            <a href="https://wa.me/201040777944" target="_blank" class="flex items-center gap-3 text-[11px] font-bold text-gray-500 hover:text-primary-magenta transition-all">
+                                <div class="w-8 h-8 rounded-lg bg-white/5 border border-white/5 flex items-center justify-center group-hover:border-primary-magenta/30 transition-all">
+                                    <i data-lucide="phone" class="w-3.5 h-3.5 text-primary-magenta"></i>
+                                </div>
+                                <span>+20 104 077 7944</span>
+                            </a>
+                        </li>
+                        <li class="group">
+                            <a href="#" class="flex items-center gap-3 text-[11px] font-bold text-gray-500 hover:text-primary-gold transition-all">
+                                <div class="w-8 h-8 rounded-lg bg-white/5 border border-white/5 flex items-center justify-center group-hover:border-primary-gold/30 transition-all">
+                                    <i data-lucide="package" class="w-3.5 h-3.5 text-primary-gold"></i>
+                                </div>
+                                <span>Logistics Protocol</span>
+                            </a>
+                        </li>
+                        <li class="group">
+                            <a href="#" class="flex items-center gap-3 text-[11px] font-bold text-gray-500 hover:text-white transition-all">
+                                <div class="w-8 h-8 rounded-lg bg-white/5 border border-white/5 flex items-center justify-center group-hover:border-white/20 transition-all">
+                                    <i data-lucide="ruler" class="w-3.5 h-3.5 text-gray-400"></i>
+                                </div>
+                                <span>Returns & Sizing</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Newsletter -->
+                <div class="space-y-8 text-left">
+                    <h4 class="text-[10px] font-black uppercase tracking-[0.3em] text-white">Neural Briefing</h4>
+                    <p class="text-gray-500 text-[10px] font-black uppercase tracking-widest leading-relaxed">Subscribe for exclusive collection drops.</p>
+                    <div class="relative group/mail">
+                        <input type="email" placeholder="NEURAL ADDRESS" 
+                            class="w-full bg-white/5 border border-white/5 rounded-2xl py-4 px-6 text-[10px] font-black uppercase tracking-widest placeholder:text-white/10 focus:bg-white/10 outline-none transition-all">
+                        <button class="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-white text-black rounded-xl flex items-center justify-center hover:bg-primary-cyan transition-colors">
+                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
+                <p class="text-gray-600 text-[10px] font-black uppercase tracking-[0.3em]">
+                    © 2026 LUMINA FUTURE OF FASHION ARCHITECTURE. ALL RIGHTS RESERVED.
+                </p>
+                <div class="flex space-x-10 text-[10px] font-black uppercase tracking-widest text-gray-600">
+                    <a href="#" class="hover:text-white transition-colors">Privacy Protocol</a>
+                    <a href="#" class="hover:text-white transition-colors">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/script.js"></script>
+    <script>
+        // Emergency icon initialization
+        if (window.lucide) {
+            lucide.createIcons();
+        }
+    </script>
+</body>
+</html>

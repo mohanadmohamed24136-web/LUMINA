@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUMINA | Designer Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script>
+        // Check authentication via cookies
+        function getCookie(name) {
+            let nameEQ = name + "=";
+            let ca = document.cookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+
+        if (!getCookie('userId')) {
+            alert('You must be registered first to access the Designer Portal');
+            window.location.href = 'login.html';
+        }
+    </script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: { colors: { primary: { cyan: "#00F0FF", magenta: "#FF00AA", gold: "#FFD700" }, dark: { bg: "#050505", card: "rgba(20, 20, 20, 0.7)", border: "rgba(255, 255, 255, 0.1)" } } } }
+        }
+    </script>
+</head>
+<body class="dark overflow-x-hidden bg-dark-bg">
+    <div class="bg-mesh"></div>
+
+    <nav class="sticky top-0 z-50 glass py-3 md:py-4 px-4 md:px-6 mx-2 md:mx-4 mt-4 rounded-2xl md:rounded-3xl border-white/5">
+        <div class="container mx-auto flex justify-between items-center gap-4 md:gap-8">
+            <a href="index.html" class="text-xl md:text-2xl font-black bg-gradient-to-r from-primary-cyan via-primary-magenta to-primary-gold bg-clip-text text-transparent tracking-tighter hover:scale-105 transition-transform shrink-0">
+                LUMINA
+            </a>
+
+            <!-- Desktop Menu -->
+            <div class="hidden xl:flex items-center space-x-8 rtl:space-x-reverse shrink-0">
+                <a href="ai-studio.html" class="font-bold text-[10px] uppercase tracking-[0.2em] hover:text-primary-cyan transition-colors" data-i18n="nav_ai">AI Studio</a>
+                <a href="index.html#designer-products-grid" class="font-bold text-[10px] uppercase tracking-[0.2em] hover:text-primary-cyan transition-colors" data-i18n="nav_designers">Designers</a>
+            </div>
+
+            <div class="flex items-center gap-1.5 md:gap-4 shrink-0">
+                <!-- Theme Toggle -->
+                <button onclick="toggleTheme()" class="w-9 h-9 md:w-12 md:h-12 flex items-center justify-center rounded-lg md:rounded-2xl bg-white/5 border border-white/10 text-gray-400 hover:text-primary-gold hover:border-primary-gold/30 transition-all group">
+                    <i data-lucide="sun" class="theme-icon w-3.5 h-3.5 md:w-5 md:h-5 group-hover:rotate-90 transition-transform"></i>
+                </button>
+
+                <a href="index.html" class="w-9 h-9 md:w-12 md:h-12 flex items-center justify-center rounded-lg md:rounded-2xl bg-white/5 border border-white/10 text-gray-400 hover:text-primary-cyan hover:border-primary-cyan/30 transition-all group">
+                    <i data-lucide="home" class="w-3.5 h-3.5 md:w-5 md:h-5 group-hover:scale-110 transition-transform"></i>
+                </a>
+                <!-- Language Switch -->
+                <button onclick="toggleLang()" class="w-9 h-9 md:w-10 md:h-10 glass rounded-full hover:bg-white/10 transition-all group flex items-center justify-center">
+                    <span id="lang-text" class="text-[8px] md:text-[10px] font-black uppercase tracking-widest text-white">EN</span>
+                </button>
+                <div class="w-px h-6 bg-white/10 mx-1 md:mx-2"></div>
+                <!-- Profile Area handles script.js global replacement -->
+                <div id="nav-user-area" class="flex items-center">
+                    <a id="nav-user-link" href="designer-portal.html" class="w-9 h-9 md:w-10 md:h-10 rounded-full glass border border-white/10 flex items-center justify-center hover:border-primary-cyan transition-all overflow-hidden">
+                        <img id="nav-user-photo" alt="User" class="w-full h-full object-cover hidden">
+                        <i id="nav-user-icon" data-lucide="user" class="w-4 h-4 md:w-5 md:h-5"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto p-4 md:p-8 lg:p-12">
+        <div class="flex flex-col lg:flex-row gap-8 md:gap-12">
+            <!-- Sidebar: Left Column (Horizontal scroll on mobile) -->
+            <aside class="w-full lg:w-96 space-y-6 md:space-y-8 animate-fade-in">
+                <div class="flex flex-col items-center text-center glass p-6 md:p-8 rounded-3xl md:rounded-[3rem] border border-white/5">
+                    <div class="relative group mb-4">
+                        <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=400" class="user-photo w-24 h-24 md:w-32 md:h-32 rounded-full object-cover border-4 border-dark-bg shadow-lg">
+                        <button onclick="triggerPhotoUpload()" class="absolute inset-0 bg-black/50 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                            <i data-lucide="camera" class="w-6 h-6 md:w-8 md:h-8 text-white"></i>
+                        </button>
+                    </div>
+                    <h2 class="user-name text-xl md:text-2xl font-black tracking-tighter uppercase">Elena Rossi</h2>
+                    <p class="text-xs md:text-sm text-primary-cyan font-bold uppercase tracking-widest">Designer</p>
+                    
+                    <div class="mt-4 flex flex-col gap-2 w-full">
+                        <div class="px-4 py-2 glass rounded-full border-white/5 flex items-center justify-between">
+                            <span class="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-gray-500">Weekly Limit:</span>
+                            <span class="text-[9px] md:text-[10px] font-black text-primary-magenta"><span id="weekly-count-display">0</span>/<span id="weekly-limit-display">7</span></span>
+                        </div>
+                        <div class="px-4 py-2 glass rounded-full border-white/5 flex items-center justify-between">
+                            <span class="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-gray-500">Tier:</span>
+                            <span id="tier-display" class="text-[9px] md:text-[10px] font-black text-primary-gold uppercase">Free</span>
+                        </div>
+                        <button id="upgrade-btn" onclick="showUpgradeModal()" class="w-full bg-gradient-to-r from-primary-cyan to-primary-magenta text-white py-2 rounded-xl font-black text-[8px] md:text-[9px] uppercase tracking-widest hover:scale-105 transition-all hidden">
+                            Upgrade to Premium
+                        </button>
+                    </div>
+
+                    <!-- Sidebar Nav (Horizontal scroll on small mobile) -->
+                    <nav class="mt-6 w-full overflow-x-auto lg:overflow-visible scrollbar-hide">
+                        <ul class="flex lg:flex-col gap-2 min-w-max lg:min-w-0">
+                            <li class="shrink-0 lg:w-full">
+                                <button onclick="showTab('profile')" class="flex items-center gap-2 md:gap-3 px-4 py-2.5 md:py-3 rounded-lg md:rounded-xl bg-white/5 text-primary-cyan border border-primary-cyan/20 transition-colors">
+                                    <i data-lucide="user" class="w-3.5 h-3.5 md:w-4 md:h-4"></i>
+                                    <span class="text-[10px] md:text-xs font-bold whitespace-nowrap">Profile Details</span>
+                                </button>
+                            </li>
+                            <li class="shrink-0 lg:w-full">
+                                <a href="index.html" class="flex items-center gap-2 md:gap-3 px-4 py-2.5 md:py-3 rounded-lg md:rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
+                                    <i data-lucide="home" class="w-3.5 h-3.5 md:w-4 md:h-4"></i>
+                                    <span class="text-[10px] md:text-xs font-bold whitespace-nowrap">Home</span>
+                                </a>
+                            </li>
+                            <li class="shrink-0 lg:w-full">
+                                <button onclick="showTab('my-products')" class="flex items-center gap-2 md:gap-3 px-4 py-2.5 md:py-3 rounded-lg md:rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
+                                    <i data-lucide="package" class="w-3.5 h-3.5 md:w-4 md:h-4"></i>
+                                    <span class="text-[10px] md:text-xs font-bold whitespace-nowrap">My Products</span>
+                                </button>
+                            </li>
+                            <li class="shrink-0 lg:w-full">
+                                <button onclick="showTab('analytics')" class="flex items-center gap-2 md:gap-3 px-4 py-2.5 md:py-3 rounded-lg md:rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
+                                    <i data-lucide="bar-chart-3" class="w-3.5 h-3.5 md:w-4 md:h-4"></i>
+                                    <span class="text-[10px] md:text-xs font-bold whitespace-nowrap">Analytics</span>
+                                </button>
+                            </li>
+                            <li class="shrink-0 lg:w-full">
+                                <button onclick="showTab('finance')" class="flex items-center gap-2 md:gap-3 px-4 py-2.5 md:py-3 rounded-lg md:rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
+                                    <i data-lucide="wallet" class="w-3.5 h-3.5 md:w-4 md:h-4"></i>
+                                    <span class="text-[10px] md:text-xs font-bold whitespace-nowrap">Finance</span>
+                                </button>
+                            </li>
+                            <li class="shrink-0 lg:w-full">
+                                <button id="sidebar-upload-btn" onclick="showUploadModal()" class="flex items-center gap-2 md:gap-3 px-4 py-2.5 md:py-3 rounded-lg md:rounded-xl bg-primary-cyan/10 text-primary-cyan border border-primary-cyan/20 hover:bg-primary-cyan/20 transition-colors">
+                                    <i data-lucide="upload-cloud" class="w-3.5 h-3.5 md:w-4 md:h-4"></i>
+                                    <span id="sidebar-upload-text" class="text-[10px] md:text-xs font-bold whitespace-nowrap">Upload Design</span>
+                                </button>
+                            </li>
+                            <li class="shrink-0 lg:w-full">
+                                <button onclick="logout()" class="flex items-center gap-2 md:gap-3 px-4 py-2.5 md:py-3 rounded-lg md:rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors lg:mt-4">
+                                    <i data-lucide="log-out" class="w-3.5 h-3.5 md:w-4 md:h-4"></i>
+                                    <span class="text-[10px] md:text-xs font-bold whitespace-nowrap">Logout</span>
+                                </button>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </aside>
+
+            <!-- Main Content: Right Column -->
+            <main class="flex-1 space-y-8 md:space-y-12 animate-fade-in" style="animation-delay: 0.1s">
+                <!-- Profile Tab -->
+                <div id="tab-profile" class="hidden space-y-6 md:space-y-8">
+                    <header class="space-y-2 md:space-y-4">
+                        <h1 class="text-4xl md:text-6xl font-black tracking-tighter uppercase text-white">Profile <span class="text-primary-cyan">Protocol</span></h1>
+                        <p class="text-gray-500 text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em] md:tracking-[0.5em]">Personal Data Management</p>
+                    </header>
+
+                    <div class="glass p-6 md:p-10 rounded-3xl md:rounded-[3.5rem] border border-white/5 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
+                        <div class="space-y-1.5 md:space-y-2">
+                            <label class="text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-gray-500 ml-3 md:ml-4">Legal Identity</label>
+                            <input type="text" id="input-name" class="w-full bg-white/5 border border-white/5 rounded-xl md:rounded-2xl py-4 md:py-5 px-6 md:px-8 text-xs md:text-sm font-bold text-white outline-none focus:border-primary-cyan/30 transition-all">
+                        </div>
+                        <div class="space-y-1.5 md:space-y-2">
+                            <label class="text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-gray-500 ml-3 md:ml-4">Neural Address (Read-Only)</label>
+                            <input type="email" id="input-email" readonly class="w-full bg-white/5 border border-white/5 rounded-xl md:rounded-2xl py-4 md:py-5 px-6 md:px-8 text-xs md:text-sm font-bold text-gray-500 outline-none cursor-not-allowed">
+                        </div>
+                        <div class="space-y-1.5 md:space-y-2">
+                            <label class="text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-gray-500 ml-3 md:ml-4">Comm-Link (WhatsApp)</label>
+                            <input type="text" id="input-phone" class="w-full bg-white/5 border border-white/5 rounded-xl md:rounded-2xl py-4 md:py-5 px-6 md:px-8 text-xs md:text-sm font-bold text-white outline-none focus:border-primary-cyan/30 transition-all">
+                        </div>
+                        <div class="space-y-1.5 md:space-y-2">
+                            <label class="text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-gray-500 ml-3 md:ml-4">Logistics Zone</label>
+                            <input type="text" id="input-address" class="w-full bg-white/5 border border-white/5 rounded-xl md:rounded-2xl py-4 md:py-5 px-6 md:px-8 text-xs md:text-sm font-bold text-white outline-none focus:border-primary-cyan/30 transition-all">
+                        </div>
+                        <div class="md:col-span-2 space-y-1.5 md:space-y-2">
+                            <label class="text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-gray-500 ml-3 md:ml-4">Neural Bio</label>
+                            <textarea id="input-bio" class="w-full bg-white/5 border border-white/5 rounded-2xl md:rounded-3xl py-4 md:py-5 px-6 md:px-8 text-xs md:text-sm font-bold text-white outline-none focus:border-primary-cyan/30 transition-all min-h-[100px] md:min-h-[120px] resize-none"></textarea>
+                        </div>
+                        <div class="md:col-span-2 flex justify-end">
+                            <button onclick="commitChanges()" class="w-full md:w-auto bg-primary-cyan text-black px-8 md:px-12 py-4 md:py-5 rounded-xl md:rounded-2xl font-black text-[10px] md:text-xs uppercase tracking-[0.2em] hover:scale-105 transition-all shadow-xl shadow-primary-cyan/20">
+                                Commit Changes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- My Products Tab -->
+                <div id="tab-my-products" class="space-y-6 md:space-y-8">
+                    <header class="space-y-2 md:space-y-4">
+                        <h1 class="text-4xl md:text-6xl font-black tracking-tighter uppercase text-white">My <span class="text-primary-magenta">Inventory</span></h1>
+                        <p class="text-gray-500 text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em] md:tracking-[0.5em]">Managing your architectural assets on the grid</p>
+                    </header>
+
+                    <!-- Inventory Search & Filter -->
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <div class="flex-1 relative group">
+                            <i data-lucide="search" class="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-primary-magenta transition-colors"></i>
+                            <input type="text" id="inventory-search" placeholder="Search your inventory..." 
+                                class="w-full bg-white/5 border border-white/5 rounded-xl md:rounded-2xl py-3.5 md:py-4 pl-14 pr-6 text-xs md:text-sm font-bold text-white outline-none focus:border-primary-magenta/30 transition-all">
+                        </div>
+                    </div>
+
+                    <!-- Products Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8" id="my-products-list">
+                        <!-- Loading state -->
+                        <div class="col-span-full py-10 text-center">
+                            <i data-lucide="loader" class="w-8 h-8 text-primary-cyan animate-spin mx-auto mb-4"></i>
+                            <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Loading Neural Inventory...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics Tab -->
+                <div id="tab-analytics" class="hidden space-y-8 md:space-y-12">
+                    <header class="space-y-2 md:space-y-4">
+                        <h1 class="text-4xl md:text-6xl font-black tracking-tighter uppercase text-white"><span data-i18n="analytics_title">Neural Insights</span></h1>
+                        <p class="text-gray-500 text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em] md:tracking-[0.5em]">Deep Data Analysis & Performance Protocol</p>
+                    </header>
+
+                    <!-- Stats Overview -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
+                        <div class="glass p-6 md:p-8 rounded-2xl md:rounded-[2.5rem] border border-white/5 space-y-1 md:space-y-2">
+                            <p class="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-gray-500" data-i18n="analytics_revenue">Total Revenue</p>
+                            <h3 id="stat-revenue" class="text-2xl md:text-4xl font-black text-white">$0.00</h3>
+                        </div>
+                        <div class="glass p-6 md:p-8 rounded-2xl md:rounded-[2.5rem] border border-white/5 space-y-1 md:space-y-2">
+                            <p class="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-gray-500" data-i18n="analytics_sold">Assets Sold</p>
+                            <h3 id="stat-sold" class="text-2xl md:text-4xl font-black text-primary-cyan">0</h3>
+                        </div>
+                        <div class="glass p-6 md:p-8 rounded-2xl md:rounded-[2.5rem] border border-white/5 space-y-1 md:space-y-2">
+                            <p class="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-gray-500" data-i18n="analytics_rate">Success Rate</p>
+                            <h3 id="stat-rate" class="text-2xl md:text-4xl font-black text-primary-magenta">0%</h3>
+                        </div>
+                    </div>
+
+                    <!-- Charts Grid -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+                        <!-- Sales Chart -->
+                        <div class="glass p-6 md:p-8 rounded-3xl md:rounded-[3rem] border border-white/5 space-y-4 md:space-y-6">
+                            <h4 class="text-[10px] md:text-xs font-black uppercase tracking-widest text-white flex items-center gap-2">
+                                <i data-lucide="trending-up" class="w-3.5 h-3.5 md:w-4 md:h-4 text-primary-cyan"></i>
+                                <span data-i18n="analytics_sales_chart">Sales Trajectory</span>
+                            </h4>
+                            <div class="h-[250px] md:h-[300px] w-full relative">
+                                <canvas id="salesChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Product Distribution -->
+                        <div class="glass p-6 md:p-8 rounded-3xl md:rounded-[3rem] border border-white/5 space-y-4 md:space-y-6">
+                            <h4 class="text-[10px] md:text-xs font-black uppercase tracking-widest text-white flex items-center gap-2">
+                                <i data-lucide="pie-chart" class="w-3.5 h-3.5 md:w-4 md:h-4 text-primary-magenta"></i>
+                                <span data-i18n="analytics_dist_chart">Asset Distribution</span>
+                            </h4>
+                            <div class="h-[250px] md:h-[300px] w-full relative flex items-center justify-center">
+                                <canvas id="distributionChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Activity Heatmap / Bar Chart -->
+                        <div class="lg:col-span-2 glass p-6 md:p-8 rounded-3xl md:rounded-[3rem] border border-white/5 space-y-4 md:space-y-6">
+                            <h4 class="text-[10px] md:text-xs font-black uppercase tracking-widest text-white flex items-center gap-2">
+                                <i data-lucide="activity" class="w-3.5 h-3.5 md:w-4 md:h-4 text-primary-gold"></i>
+                                <span data-i18n="analytics_activity_chart">Neural Upload Frequency</span>
+                            </h4>
+                            <div class="h-[250px] md:h-[300px] w-full relative">
+                                <canvas id="activityChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Financial Vault Tab -->
+                <div id="tab-finance" class="hidden space-y-8 md:space-y-12">
+                    <header class="space-y-2 md:space-y-4">
+                        <h1 class="text-4xl md:text-6xl font-black tracking-tighter uppercase text-white">Financial <span class="text-primary-gold">Vault</span></h1>
+                        <p class="text-gray-500 text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em] md:tracking-[0.5em]">Transaction Records & Payment Manifests</p>
+                    </header>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                        <!-- Premium Status Card -->
+                        <div class="glass p-8 md:p-10 rounded-3xl md:rounded-[3.5rem] border border-white/5 space-y-6 md:space-y-8 relative overflow-hidden group">
+                            <div class="absolute -top-12 -right-12 w-40 h-40 bg-primary-gold/10 rounded-full blur-3xl group-hover:bg-primary-gold/20 transition-all"></div>
+                            <div class="flex justify-between items-start relative z-10">
+                                <div class="space-y-1 md:space-y-2">
+                                    <p class="text-[8px] md:text-[10px] font-black uppercase tracking-widest text-gray-500">Subscription Status</p>
+                                    <h3 id="finance-tier-display" class="text-3xl md:text-4xl font-black text-white uppercase tracking-tighter">Free Tier</h3>
+                                </div>
+                                <div class="w-12 h-12 md:w-16 md:h-16 bg-white/5 rounded-xl md:rounded-2xl flex items-center justify-center border border-white/10">
+                                    <i data-lucide="shield-check" class="w-6 h-6 md:w-8 md:h-8 text-primary-gold"></i>
+                                </div>
+                            </div>
+                            
+                            <div id="premium-benefits-list" class="space-y-3 md:space-y-4 relative z-10">
+                                <div class="flex items-center gap-3 text-[10px] md:text-xs font-bold text-gray-400">
+                                    <i data-lucide="check" class="w-3.5 h-3.5 md:w-4 md:h-4 text-green-500"></i>
+                                    <span>7 Uploads Per Week</span>
+                                </div>
+                                <div class="flex items-center gap-3 text-[10px] md:text-xs font-bold text-gray-400">
+                                    <i data-lucide="check" class="w-3.5 h-3.5 md:w-4 md:h-4 text-green-500"></i>
+                                    <span>Standard Neural Processing</span>
+                                </div>
+                            </div>
+
+                            <button id="finance-upgrade-btn" onclick="showUpgradeModal()" class="w-full bg-primary-gold text-black py-4 md:py-5 rounded-xl md:rounded-2xl font-black text-[10px] md:text-xs uppercase tracking-[0.2em] hover:scale-105 transition-all shadow-xl shadow-primary-gold/20 relative z-10">
+                                Upgrade to Premium Protocol
+                            </button>
+                        </div>
+
+                        <!-- Quick Stats -->
+                        <div class="glass p-8 md:p-10 rounded-3xl md:rounded-[3.5rem] border border-white/5 flex flex-col justify-center space-y-6 md:space-y-8">
+                            <div class="space-y-1 md:space-y-2">
+                                <p class="text-[8px] md:text-[10px] font-black uppercase tracking-widest text-gray-500 text-center">Total Invested in Grid</p>
+                                <h3 id="finance-total-spent" class="text-4xl md:text-6xl font-black text-white text-center tracking-tighter">$0.00</h3>
+                            </div>
+                            <div class="h-px bg-white/5"></div>
+                            <div class="flex justify-around items-center">
+                                <div class="text-center">
+                                    <p class="text-[7px] md:text-[8px] font-black uppercase tracking-widest text-gray-500">Transactions</p>
+                                    <p id="finance-trans-count" class="text-lg md:text-xl font-black text-primary-cyan">0</p>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-[7px] md:text-[8px] font-black uppercase tracking-widest text-gray-500">Vault Security</p>
+                                    <p class="text-lg md:text-xl font-black text-green-500">Level 4</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Transaction Table -->
+                    <div class="glass p-6 md:p-10 rounded-3xl md:rounded-[3.5rem] border border-white/5 space-y-6 md:space-y-8">
+                        <h4 class="text-[10px] md:text-xs font-black uppercase tracking-widest text-white flex items-center gap-3">
+                            <i data-lucide="list" class="w-3.5 h-3.5 md:w-4 md:h-4 text-primary-gold"></i>
+                            Recent Manifests
+                        </h4>
+                        <div class="overflow-x-auto -mx-6 md:mx-0">
+                            <table class="w-full text-left min-w-[600px] md:min-w-0">
+                                <thead>
+                                    <tr class="border-b border-white/5">
+                                        <th class="px-6 md:px-0 pb-4 md:pb-6 text-[8px] md:text-[10px] font-black uppercase tracking-widest text-gray-500">Manifest ID</th>
+                                        <th class="px-6 md:px-0 pb-4 md:pb-6 text-[8px] md:text-[10px] font-black uppercase tracking-widest text-gray-500">Type</th>
+                                        <th class="px-6 md:px-0 pb-4 md:pb-6 text-[8px] md:text-[10px] font-black uppercase tracking-widest text-gray-500">Amount</th>
+                                        <th class="px-6 md:px-0 pb-4 md:pb-6 text-[8px] md:text-[10px] font-black uppercase tracking-widest text-gray-500">Status</th>
+                                        <th class="px-6 md:px-0 pb-4 md:pb-6 text-[8px] md:text-[10px] font-black uppercase tracking-widest text-gray-500">Timestamp</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="finance-table-body" class="divide-y divide-white/5">
+                                    <!-- Transactions will be injected here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Favorites Modal -->
+    <div id="favorites-modal" class="fixed inset-0 z-[100] hidden">
+        <div class="absolute inset-0 bg-dark-bg/80 backdrop-blur-md" onclick="closeFavoritesModal()"></div>
+        <div class="absolute top-24 right-6 w-full max-w-sm glass rounded-[3rem] border border-white/10 overflow-hidden animate-fade-in">
+            <div class="p-8 space-y-6">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xl font-black uppercase tracking-tighter text-white">Your Collection</h3>
+                    <button onclick="closeFavoritesModal()" class="text-gray-500 hover:text-white">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                <div id="fav-list-container" class="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                    <!-- Fav items will be injected here -->
+                    <p class="text-center text-gray-500 text-[10px] font-black uppercase tracking-widest py-10">Empty Collection</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Management Modal (Hidden) -->
+    <div id="upload-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="hideUploadModal()"></div>
+        <div class="relative glass p-1.5 rounded-[3rem] border border-white/10 w-full max-w-xl animate-scale-in">
+            <div class="bg-black/60 rounded-[2.5rem] p-6 md:p-8 space-y-6">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-black tracking-tighter uppercase text-white">Upload Design</h2>
+                    <button onclick="hideUploadModal()" class="text-gray-500 hover:text-white transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-1.5">
+                        <label class="text-[8px] font-black uppercase tracking-widest text-gray-500 ml-3">Product Name</label>
+                        <input type="text" id="prod-name" placeholder="e.g. Cyber-Silk Gown" class="w-full bg-white/5 border border-white/5 rounded-xl py-3 px-5 text-xs font-bold text-white outline-none focus:border-primary-cyan/30 transition-all">
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="text-[8px] font-black uppercase tracking-widest text-gray-500 ml-3">Asset Value ($)</label>
+                        <input type="number" id="prod-price" min="0" placeholder="1299" class="w-full bg-white/5 border border-white/5 rounded-xl py-3 px-5 text-xs font-bold text-white outline-none focus:border-primary-cyan/30 transition-all">
+                    </div>
+                    
+                    <div class="md:col-span-2 space-y-1.5">
+                        <label class="text-[8px] font-black uppercase tracking-widest text-gray-500 ml-3">Design Assets (Max 5)</label>
+                        <input type="file" id="prod-image" class="hidden" accept="image/*" multiple onchange="handleMultipleImages(this)">
+                        <div onclick="document.getElementById('prod-image').click()" class="w-full bg-white/5 border border-dashed border-white/10 rounded-xl py-4 px-5 text-[9px] font-black uppercase tracking-widest text-gray-500 hover:border-primary-cyan transition-all cursor-pointer flex flex-col items-center justify-center gap-2">
+                            <i data-lucide="upload-cloud" class="w-6 h-6 text-primary-cyan"></i>
+                            <span id="upload-status">Select images</span>
+                        </div>
+                        <div id="image-preview-container" class="grid grid-cols-5 gap-2 mt-2"></div>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="text-[8px] font-black uppercase tracking-widest text-gray-500 ml-3 mb-2 block">Size Dimensions (cm)</label>
+                        <div class="grid grid-cols-5 gap-2">
+                            <div class="space-y-1">
+                                <span class="text-[9px] font-black text-primary-cyan">S</span>
+                                <input type="text" id="size-s" placeholder="48x68" class="w-full bg-white/5 border border-white/5 rounded-lg py-2 px-2 text-[10px] font-bold text-white outline-none focus:border-primary-cyan/30 transition-all text-center">
+                            </div>
+                            <div class="space-y-1">
+                                <span class="text-[9px] font-black text-primary-cyan">M</span>
+                                <input type="text" id="size-m" placeholder="52x70" class="w-full bg-white/5 border border-white/5 rounded-lg py-2 px-2 text-[10px] font-bold text-white outline-none focus:border-primary-cyan/30 transition-all text-center">
+                            </div>
+                            <div class="space-y-1">
+                                <span class="text-[9px] font-black text-primary-cyan">L</span>
+                                <input type="text" id="size-l" placeholder="56x72" class="w-full bg-white/5 border border-white/5 rounded-lg py-2 px-2 text-[10px] font-bold text-white outline-none focus:border-primary-cyan/30 transition-all text-center">
+                            </div>
+                            <div class="space-y-1">
+                                <span class="text-[9px] font-black text-primary-cyan">XL</span>
+                                <input type="text" id="size-xl" placeholder="60x74" class="w-full bg-white/5 border border-white/5 rounded-lg py-2 px-2 text-[10px] font-bold text-white outline-none focus:border-primary-cyan/30 transition-all text-center">
+                            </div>
+                            <div class="space-y-1">
+                                <span class="text-[9px] font-black text-primary-cyan">XXL</span>
+                                <input type="text" id="size-xxl" placeholder="64x76" class="w-full bg-white/5 border border-white/5 rounded-lg py-2 px-2 text-[10px] font-bold text-white outline-none focus:border-primary-cyan/30 transition-all text-center">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-1.5">
+                            <label class="text-[8px] font-black uppercase tracking-widest text-gray-500 ml-3">Quantity</label>
+                            <input type="number" id="prod-quantity" min="1" value="1" class="w-full bg-white/5 border border-white/5 rounded-xl py-3 px-5 text-xs font-bold text-white outline-none focus:border-primary-cyan/30 transition-all">
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[8px] font-black uppercase tracking-widest text-gray-500 ml-3">Colors</label>
+                            <input type="text" id="prod-colors" placeholder="e.g. Red, Blue" class="w-full bg-white/5 border border-white/5 rounded-xl py-3 px-5 text-xs font-bold text-white outline-none focus:border-primary-cyan/30 transition-all">
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-2 space-y-1.5">
+                        <label class="text-[8px] font-black uppercase tracking-widest text-gray-500 ml-3">Description</label>
+                        <textarea id="prod-description" rows="2" placeholder="Notes..." class="w-full bg-white/5 border border-white/5 rounded-xl py-3 px-5 text-xs font-bold text-white outline-none focus:border-primary-cyan/30 transition-all resize-none"></textarea>
+                    </div>
+                </div>
+
+                <button id="initialize-asset-btn" onclick="initializeAsset()" class="w-full bg-white text-black py-4 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-primary-cyan transition-all">
+                    Initialize Asset
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upgrade Modal -->
+    <div id="upgrade-modal" class="fixed inset-0 z-[150] flex items-center justify-center p-6 hidden">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-md" onclick="hideUpgradeModal()"></div>
+        <div class="relative w-full max-w-lg glass p-10 rounded-[4rem] border border-primary-cyan/20 animate-slide-up">
+            <button onclick="hideUpgradeModal()" class="absolute top-8 right-8 text-gray-500 hover:text-white transition-colors">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+            
+            <div class="text-center space-y-6">
+                <div class="w-20 h-20 bg-primary-cyan/10 rounded-full flex items-center justify-center mx-auto border border-primary-cyan/20">
+                    <i data-lucide="zap" class="w-10 h-10 text-primary-cyan"></i>
+                </div>
+                <h3 class="text-4xl font-black tracking-tighter uppercase text-white">Upgrade to <span class="text-primary-cyan">Premium</span></h3>
+                <p class="text-gray-400 text-xs font-bold uppercase tracking-widest leading-relaxed">
+                    Unlock unlimited architectural uploads, priority neural processing, and advanced design analytics.
+                </p>
+                
+                <div class="bg-white/5 rounded-3xl p-8 border border-white/5 space-y-4">
+                    <div class="flex justify-between items-center border-b border-white/5 pb-4">
+                        <span class="text-[10px] font-black uppercase tracking-widest text-gray-500">Subscription Protocol</span>
+                        <span class="text-xl font-black text-white">$29.99/mo</span>
+                    </div>
+                    <ul class="space-y-3 text-left">
+                        <li class="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-gray-300">
+                            <i data-lucide="check-circle" class="w-4 h-4 text-green-500"></i>
+                            Unlimited Weekly Uploads
+                        </li>
+                        <li class="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-gray-300">
+                            <i data-lucide="check-circle" class="w-4 h-4 text-green-500"></i>
+                            Priority Support Line
+                        </li>
+                        <li class="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-gray-300">
+                            <i data-lucide="check-circle" class="w-4 h-4 text-green-500"></i>
+                            Verified Designer Badge
+                        </li>
+                    </ul>
+                </div>
+                
+                <button onclick="confirmUpgrade()" class="w-full bg-primary-cyan text-black py-5 rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:scale-105 transition-all shadow-xl shadow-primary-cyan/20">
+                    Activate Premium Access
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Premium Footer -->
+    <footer class="relative mt-24 overflow-hidden">
+        <!-- Background Accents -->
+        <div class="absolute inset-0 -z-10 bg-black/40 backdrop-blur-3xl border-t border-white/5"></div>
+        <div class="absolute -top-24 -left-24 w-96 h-96 bg-primary-cyan/5 rounded-full blur-[100px]"></div>
+        <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-primary-magenta/5 rounded-full blur-[100px]"></div>
+
+        <div class="container mx-auto px-6 py-20">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-20">
+                <!-- Brand Info -->
+                <div class="space-y-8 text-left">
+                    <a href="index.html" class="text-3xl font-black bg-gradient-to-r from-primary-cyan via-primary-magenta to-primary-gold bg-clip-text text-transparent tracking-tighter uppercase">LUMINA</a>
+                    <p class="text-gray-500 text-sm font-medium leading-relaxed">
+                        Redefining the architecture of fashion through neural networks and master craftsmanship. Join the elite community of designers and collectors.
+                    </p>
+                </div>
+
+                <!-- Explore -->
+                <div class="space-y-8 text-left">
+                    <h4 class="text-[10px] font-black uppercase tracking-[0.3em] text-white">Explore Ecosystem</h4>
+                    <ul class="space-y-4">
+                        <li><a href="ai-studio.html" class="text-sm font-bold text-gray-500 hover:text-primary-cyan transition-colors">AI Creative Studio</a></li>
+                        <li><a href="index.html#designer-products-grid" class="text-sm font-bold text-gray-500 hover:text-primary-cyan transition-colors">Elite Designers</a></li>
+                        <li><a href="designer-portal.html" class="text-sm font-bold text-gray-500 hover:text-primary-magenta transition-colors">Designer Portal</a></li>
+                        <li><a href="#" class="text-sm font-bold text-gray-500 hover:text-primary-cyan transition-colors">Trending Now</a></li>
+                    </ul>
+                </div>
+
+                <!-- Direct Collaboration -->
+                <div class="space-y-8 text-left">
+                    <h4 class="text-[10px] font-black uppercase tracking-[0.3em] text-white">Direct Collaboration</h4>
+                    <ul class="space-y-4">
+                        <li class="group">
+                            <a href="mailto:mohanad.mohamed.24136@gmail.com" class="flex items-center gap-3 text-[11px] font-bold text-gray-500 hover:text-primary-cyan transition-all">
+                                <div class="w-8 h-8 rounded-lg bg-white/5 border border-white/5 flex items-center justify-center group-hover:border-primary-cyan/30 transition-all">
+                                    <i data-lucide="mail" class="w-3.5 h-3.5 text-primary-cyan"></i>
+                                </div>
+                                <span class="truncate">mohanad.mohamed.24136@gmail.com</span>
+                            </a>
+                        </li>
+                        <li class="group">
+                            <a href="https://wa.me/201040777944" target="_blank" class="flex items-center gap-3 text-[11px] font-bold text-gray-500 hover:text-primary-magenta transition-all">
+                                <div class="w-8 h-8 rounded-lg bg-white/5 border border-white/5 flex items-center justify-center group-hover:border-primary-magenta/30 transition-all">
+                                    <i data-lucide="phone" class="w-3.5 h-3.5 text-primary-magenta"></i>
+                                </div>
+                                <span>+20 104 077 7944</span>
+                            </a>
+                        </li>
+                        <li class="group">
+                            <a href="#" class="flex items-center gap-3 text-[11px] font-bold text-gray-500 hover:text-primary-gold transition-all">
+                                <div class="w-8 h-8 rounded-lg bg-white/5 border border-white/5 flex items-center justify-center group-hover:border-primary-gold/30 transition-all">
+                                    <i data-lucide="package" class="w-3.5 h-3.5 text-primary-gold"></i>
+                                </div>
+                                <span>Logistics Protocol</span>
+                            </a>
+                        </li>
+                        <li class="group">
+                            <a href="#" class="flex items-center gap-3 text-[11px] font-bold text-gray-500 hover:text-white transition-all">
+                                <div class="w-8 h-8 rounded-lg bg-white/5 border border-white/5 flex items-center justify-center group-hover:border-white/20 transition-all">
+                                    <i data-lucide="ruler" class="w-3.5 h-3.5 text-gray-400"></i>
+                                </div>
+                                <span>Returns & Sizing</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Newsletter -->
+                <div class="space-y-8 text-left">
+                    <h4 class="text-[10px] font-black uppercase tracking-[0.3em] text-white">Neural Briefing</h4>
+                    <p class="text-gray-500 text-[10px] font-black uppercase tracking-widest leading-relaxed">Subscribe for exclusive collection drops.</p>
+                    <div class="relative group/mail">
+                        <input type="email" placeholder="NEURAL ADDRESS" 
+                            class="w-full bg-white/5 border border-white/5 rounded-2xl py-4 px-6 text-[10px] font-black uppercase tracking-widest placeholder:text-white/10 focus:bg-white/10 outline-none transition-all">
+                        <button class="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-white text-black rounded-xl flex items-center justify-center hover:bg-primary-cyan transition-colors">
+                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
+                <p class="text-gray-600 text-[10px] font-black uppercase tracking-[0.3em]">
+                    © 2026 LUMINA FUTURE OF FASHION ARCHITECTURE. ALL RIGHTS RESERVED.
+                </p>
+                <div class="flex space-x-10 text-[10px] font-black uppercase tracking-widest text-gray-600">
+                    <a href="#" class="hover:text-white transition-colors">Privacy Protocol</a>
+                    <a href="#" class="hover:text-white transition-colors">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/script.js"></script>
+</body>
+</html>
